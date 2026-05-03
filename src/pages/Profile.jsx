@@ -187,7 +187,7 @@ export default function Profile() {
           borderRadius: 'var(--radius-card)', padding: 20, marginBottom: 20,
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--gold)', letterSpacing: '-0.03em', marginBottom: 4 }}>Dressingwell</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--gold)', letterSpacing: '-0.03em', marginBottom: 4 }}>Fringy</div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Version 1.0 · Made in Morocco 🇲🇦</div>
         </div>
       </div>

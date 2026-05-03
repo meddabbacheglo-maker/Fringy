@@ -93,8 +93,8 @@ export default function Landing() {
             marginBottom: 8,
             textShadow: '0 2px 12px rgba(0,0,0,0.4)',
           }}>
-            <span style={{ color: '#FFFFFF' }}>Dressing</span>
-            <span style={{ color: '#C9A84C' }}>well</span>
+            <span style={{ color: '#FFFFFF' }}>Frin</span>
+            <span style={{ color: '#C9A84C' }}>gy</span>
           </div>
 
           {/* Tagline */}
