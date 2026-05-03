@@ -1,4 +1,4 @@
-const CACHE = 'fringy-v1'
+const CACHE = 'clozy-v1'
 const PRECACHE = ['/', '/index.html']
 
 self.addEventListener('install', e => {
