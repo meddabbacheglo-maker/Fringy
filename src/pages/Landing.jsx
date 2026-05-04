@@ -199,7 +199,7 @@ export default function Landing() {
           {/* Buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 18 }}>
             <button
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/auth')}
               style={{
                 width: '100%',
                 padding: '16px 24px',
@@ -227,7 +227,7 @@ export default function Landing() {
             </button>
 
             <button
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/auth')}
               style={{
                 width: '100%',
                 padding: '15px 24px',

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { supabase } from '../lib/supabase'
 
 const sampleItems = [
   { id: '1', name: 'Kaftan Brodé', category: 'Traditionnel', color: '#C9A84C', colorName: 'Or', brand: 'Artisanat Fès', season: ['Été', 'Printemps'], occasion: ['Fête', 'Mariage'], image: null, tags: ['kaftan', 'brodé', 'cérémonie'], favorite: true, wearCount: 3, addedAt: new Date('2024-01-10') },
@@ -18,28 +19,110 @@ const sampleOutfits = [
 ]
 
 export const CATEGORIES = ['Tous', 'Hauts', 'Bas', 'Robes', 'Traditionnel', 'Chaussures', 'Accessoires', 'Manteaux']
-export const OCCASIONS = ['Casual', 'Travail', 'Fête', 'Mariage', 'Soirée', 'Sport', 'Prière', 'Sortie', 'Quotidien']
-export const SEASONS = ['Toutes saisons', 'Printemps', 'Été', 'Automne', 'Hiver']
-export const COLORS = [
-  { name: 'Blanc', hex: '#FFFFFF' },
-  { name: 'Noir', hex: '#1A1916' },
-  { name: 'Or', hex: '#C9A84C' },
-  { name: 'Camel', hex: '#C4A882' },
-  { name: 'Bleu', hex: '#1A3A5C' },
-  { name: 'Rouge', hex: '#C9283E' },
-  { name: 'Vert', hex: '#2D6A4F' },
-  { name: 'Rose', hex: '#E8C4C4' },
-  { name: 'Crème', hex: '#F4F0E8' },
-  { name: 'Gris', hex: '#8A8780' },
+export const OCCASIONS  = ['Casual', 'Travail', 'Fête', 'Mariage', 'Soirée', 'Sport', 'Prière', 'Sortie', 'Quotidien']
+export const SEASONS    = ['Toutes saisons', 'Printemps', 'Été', 'Automne', 'Hiver']
+export const COLORS     = [
+  { name: 'Blanc',  hex: '#FFFFFF' }, { name: 'Noir',   hex: '#1A1916' },
+  { name: 'Or',     hex: '#C9A84C' }, { name: 'Camel',  hex: '#C4A882' },
+  { name: 'Bleu',   hex: '#1A3A5C' }, { name: 'Rouge',  hex: '#C9283E' },
+  { name: 'Vert',   hex: '#2D6A4F' }, { name: 'Rose',   hex: '#E8C4C4' },
+  { name: 'Crème',  hex: '#F4F0E8' }, { name: 'Gris',   hex: '#8A8780' },
 ]
 
 const useWardrobeStore = create((set, get) => ({
-  items: sampleItems,
-  outfits: sampleOutfits,
+  // ── State ────────────────────────────────────────────────
+  items:            sampleItems,
+  outfits:          sampleOutfits,
   selectedCategory: 'Tous',
-  searchQuery: '',
-  activeOccasion: null,
+  searchQuery:      '',
+  activeOccasion:   null,
 
+  // auth
+  user:        null,
+  authLoading: true,
+
+  // ── Auth ─────────────────────────────────────────────────
+  setUser: (user) => set({ user, authLoading: false }),
+
+  signUp: async (email, password, fullName) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    })
+    if (error) throw error
+    return data
+  },
+
+  signIn: async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw error
+    set({ user: data.user })
+    return data
+  },
+
+  signOut: async () => {
+    await supabase.auth.signOut()
+    set({ user: null })
+  },
+
+  getCurrentUser: async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
+    set({ user, authLoading: false })
+    return user
+  },
+
+  // ── Supabase data ─────────────────────────────────────────
+  fetchItems: async () => {
+    const { user } = get()
+    if (!user) return
+    const { data, error } = await supabase
+      .from('items')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    if (!error && data.length > 0) {
+      const mapped = data.map(r => ({
+        id:        r.id,
+        name:      r.name,
+        category:  r.category,
+        color:     r.color_hex || '#C9A84C',
+        colorName: r.color,
+        brand:     r.brand,
+        season:    r.season    || [],
+        occasion:  r.occasion  || [],
+        tags:      r.tags      || [],
+        image:     r.image_url || null,
+        favorite:  r.favorite  || false,
+        wearCount: r.worn_count || 0,
+        addedAt:   new Date(r.created_at),
+      }))
+      set({ items: mapped })
+    }
+  },
+
+  saveItem: async (item) => {
+    const { user } = get()
+    if (!user) return
+    const { error } = await supabase.from('items').insert({
+      user_id:   user.id,
+      name:      item.name,
+      category:  item.category,
+      color:     item.colorName,
+      color_hex: item.color,
+      brand:     item.brand,
+      season:    item.season,
+      occasion:  item.occasion,
+      tags:      item.tags,
+      image_url: item.image || null,
+      favorite:  false,
+      worn_count: 0,
+    })
+    if (!error) get().fetchItems()
+  },
+
+  // ── Local item mutations ──────────────────────────────────
   addItem: (item) => set((s) => ({
     items: [...s.items, { ...item, id: Date.now().toString(), wearCount: 0, addedAt: new Date(), favorite: false }]
   })),
@@ -49,7 +132,7 @@ const useWardrobeStore = create((set, get) => ({
   })),
 
   removeItem: (id) => set((s) => ({
-    items: s.items.filter(i => i.id !== id),
+    items:   s.items.filter(i => i.id !== id),
     outfits: s.outfits.map(o => ({ ...o, items: o.items.filter(iid => iid !== id) }))
   })),
 
@@ -61,6 +144,7 @@ const useWardrobeStore = create((set, get) => ({
     items: s.items.map(i => i.id === id ? { ...i, wearCount: i.wearCount + 1 } : i)
   })),
 
+  // ── Outfit mutations ──────────────────────────────────────
   addOutfit: (outfit) => set((s) => ({
     outfits: [...s.outfits, { ...outfit, id: Date.now().toString(), createdAt: new Date(), favorite: false }]
   })),
@@ -73,16 +157,17 @@ const useWardrobeStore = create((set, get) => ({
     outfits: s.outfits.filter(o => o.id !== id)
   })),
 
+  // ── Filters ──────────────────────────────────────────────
   setSelectedCategory: (cat) => set({ selectedCategory: cat }),
-  setSearchQuery: (q) => set({ searchQuery: q }),
-  setActiveOccasion: (occ) => set({ activeOccasion: occ }),
+  setSearchQuery:      (q)   => set({ searchQuery: q }),
+  setActiveOccasion:   (occ) => set({ activeOccasion: occ }),
 
   getFilteredItems: () => {
     const { items, selectedCategory, searchQuery, activeOccasion } = get()
     return items.filter(item => {
-      const matchCat = selectedCategory === 'Tous' || item.category === selectedCategory
+      const matchCat    = selectedCategory === 'Tous' || item.category === selectedCategory
       const matchSearch = !searchQuery || item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.tags.some(t => t.includes(searchQuery.toLowerCase()))
-      const matchOcc = !activeOccasion || item.occasion.includes(activeOccasion)
+      const matchOcc    = !activeOccasion || item.occasion.includes(activeOccasion)
       return matchCat && matchSearch && matchOcc
     })
   },
@@ -91,8 +176,8 @@ const useWardrobeStore = create((set, get) => ({
 
   getStats: () => {
     const { items, outfits } = get()
-    const totalWears = items.reduce((sum, i) => sum + i.wearCount, 0)
-    const categories = [...new Set(items.map(i => i.category))].length
+    const totalWears  = items.reduce((sum, i) => sum + i.wearCount, 0)
+    const categories  = [...new Set(items.map(i => i.category))].length
     return { totalItems: items.length, totalOutfits: outfits.length, totalWears, categories }
   },
 }))

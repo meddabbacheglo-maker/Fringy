@@ -11,7 +11,7 @@ const tabs = [
 export default function BottomNav() {
   const location = useLocation()
   const navigate = useNavigate()
-  const isHidden = location.pathname === '/' || ['/wardrobe/add', '/wardrobe/'].some(p => location.pathname.startsWith(p) && location.pathname !== '/wardrobe')
+  const isHidden = ['/', '/auth'].includes(location.pathname) || ['/wardrobe/add', '/wardrobe/'].some(p => location.pathname.startsWith(p) && location.pathname !== '/wardrobe')
 
   if (isHidden) return null
 
