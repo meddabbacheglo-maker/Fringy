@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import useWardrobeStore, { OCCASIONS, SEASONS } from '../store/useWardrobeStore'
 
@@ -6,7 +7,8 @@ const CITIES = ['Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 
 export default function Profile() {
-  const { getStats, items } = useWardrobeStore()
+  const { getStats, items, signOut } = useWardrobeStore()
+  const navigate = useNavigate()
   const stats = getStats()
   const [profile, setProfile] = useState({
     name: 'Youssef El Amrani',
@@ -184,12 +186,35 @@ export default function Profile() {
         {/* App info */}
         <div style={{
           background: 'var(--surface)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-card)', padding: 20, marginBottom: 20,
+          borderRadius: 'var(--radius-card)', padding: 20, marginBottom: 16,
           textAlign: 'center',
         }}>
           <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--gold)', letterSpacing: '-0.03em', marginBottom: 4 }}>Clozy</div>
           <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Version 1.0 · Made in Morocco 🇲🇦</div>
         </div>
+
+        {/* Logout */}
+        <button
+          onClick={async () => { await signOut(); navigate('/auth', { replace: true }) }}
+          style={{
+            width: '100%', padding: '14px',
+            borderRadius: 'var(--radius-pill)',
+            border: '1.5px solid #FFCDD2',
+            background: 'transparent',
+            color: '#C62828',
+            fontSize: 15, fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            marginBottom: 20,
+          }}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Se déconnecter
+        </button>
       </div>
     </div>
   )
