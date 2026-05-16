@@ -19,7 +19,7 @@ const sampleOutfits = [
 ]
 
 export const CATEGORIES = ['Tous', 'Hauts', 'Bas', 'Robes', 'Traditionnel', 'Chaussures', 'Accessoires', 'Manteaux']
-export const OCCASIONS  = ['Casual', 'Travail', 'Fête', 'Mariage', 'Soirée', 'Sport', 'Prière', 'Sortie', 'Quotidien']
+export const OCCASIONS  = ['Casual', 'Travail', 'Fête', 'Mariage', 'Soirée', 'Sport', 'Prière', 'Sortie', 'Quotidien', 'Ramadan', 'Aïd']
 export const SEASONS    = ['Toutes saisons', 'Printemps', 'Été', 'Automne', 'Hiver']
 export const COLORS     = [
   { name: 'Blanc',  hex: '#FFFFFF' }, { name: 'Noir',   hex: '#1A1916' },
@@ -38,9 +38,10 @@ const useWardrobeStore = create((set, get) => ({
   activeOccasion:   null,
 
   // auth
-  user:        null,
-  userProfile: null,
-  authLoading: true,
+  user:         null,
+  userProfile:  null,
+  authLoading:  true,
+  itemsLoading: true,
 
   // ── Auth ─────────────────────────────────────────────────
   setUser: (user) => set({ user, authLoading: false }),
@@ -73,7 +74,7 @@ const useWardrobeStore = create((set, get) => ({
 
   signOut: async () => {
     await supabase.auth.signOut()
-    set({ user: null, userProfile: null, items: [], outfits: [] })
+    set({ user: null, userProfile: null, items: [], outfits: [], itemsLoading: false })
   },
 
   getCurrentUser: async () => {
@@ -104,7 +105,8 @@ const useWardrobeStore = create((set, get) => ({
   // ── Supabase data ─────────────────────────────────────────
   fetchItems: async () => {
     const { user } = get()
-    if (!user) return
+    if (!user) { set({ itemsLoading: false }); return }
+    set({ itemsLoading: true })
     const { data, error } = await supabase
       .from('items')
       .select('*')
@@ -126,7 +128,9 @@ const useWardrobeStore = create((set, get) => ({
         wearCount: r.worn_count || 0,
         addedAt:   new Date(r.created_at),
       }))
-      set({ items: mapped })
+      set({ items: mapped, itemsLoading: false })
+    } else {
+      set({ itemsLoading: false })
     }
   },
 
