@@ -12,23 +12,24 @@ const TIPS = [
   { icon: '✨', title: 'Occasion : Fête Marocaine', body: 'Pour une fête, privilégiez les broderies dorées et les tissus satiné ou velours.' },
 ]
 
-const STYLE_PROFILES = [
-  { id: 'modern', label: 'Moderne', icon: '🏙️' },
-  { id: 'traditional', label: 'Traditionnel', icon: '🕌' },
-  { id: 'fusion', label: 'Fusion', icon: '✨' },
-  { id: 'casual', label: 'Casual', icon: '😎' },
+const IA_FEATURES = [
+  { id: 'chat', label: 'Chat style', Icon: ChatIcon },
+  { id: 'tenue', label: 'Tenue du jour', Icon: HangerIcon },
+  { id: 'market', label: 'Marketplace', Icon: BagIcon },
+  { id: 'antiachat', label: 'Anti-achat', Icon: ShieldIcon },
+  { id: 'selfie', label: 'Selfie miroir', Icon: CameraIcon },
+  { id: 'style', label: 'Mon style', Icon: SparklesIcon },
 ]
 
 export default function Stylist() {
   const { items } = useWardrobeStore()
   const [occasion, setOccasion] = useState('')
-  const [profile, setProfile] = useState('')
   const [suggestions, setSuggestions] = useState(null)
   const [loading, setLoading] = useState(false)
   const [activeTip, setActiveTip] = useState(0)
 
   const generateSuggestions = () => {
-    if (!occasion && !profile) return
+    if (!occasion) return
     setLoading(true)
     setSuggestions(null)
     setTimeout(() => {
@@ -79,26 +80,33 @@ export default function Stylist() {
           </div>
         </div>
 
-        {/* Style Profile */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 10 }}>Mon Style</div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {STYLE_PROFILES.map(p => (
-              <button
-                key={p.id}
-                onClick={() => setProfile(p.id)}
+        {/* IA Features Grid */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Fonctionnalités IA</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+            {IA_FEATURES.map(({ id, label, Icon }) => (
+              <div
+                key={id}
                 style={{
-                  flex: 1, padding: '10px 8px',
-                  borderRadius: 12,
-                  background: profile === p.id ? 'var(--gold)' : 'var(--surface)',
-                  border: profile === p.id ? '1.5px solid var(--gold)' : '1.5px solid var(--border)',
-                  cursor: 'pointer', transition: 'all 0.15s',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                  background: 'var(--surface)',
+                  border: '1.5px solid var(--border)',
+                  borderRadius: 14, padding: '16px 8px',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                  cursor: 'default',
                 }}
               >
-                <span style={{ fontSize: 20 }}>{p.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, color: profile === p.id ? 'white' : 'var(--text-muted)' }}>{p.label}</span>
-              </button>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: 'rgba(201,168,76,0.10)',
+                  border: '1px solid rgba(201,168,76,0.25)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text)', textAlign: 'center', lineHeight: 1.3 }}>
+                  {label}
+                </span>
+              </div>
             ))}
           </div>
         </div>
@@ -116,8 +124,8 @@ export default function Stylist() {
         {/* Generate button */}
         <button
           className="btn-gold"
-          style={{ width: '100%', marginBottom: 24, opacity: (occasion || profile) ? 1 : 0.5 }}
-          disabled={!occasion && !profile}
+          style={{ width: '100%', marginBottom: 24, opacity: occasion ? 1 : 0.5 }}
+          disabled={!occasion}
           onClick={generateSuggestions}
         >
           {loading ? 'Analyse en cours...' : '✨ Générer des suggestions'}
@@ -166,7 +174,7 @@ export default function Stylist() {
           </div>
         )}
 
-        {suggestions === null && !loading && occasion !== '' && (
+        {suggestions === null && !loading && occasion && (
           <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-muted)', fontSize: 14 }}>
             Ajoutez plus d'articles pour des suggestions variées.
           </div>
@@ -200,5 +208,59 @@ export default function Stylist() {
         </div>
       </div>
     </div>
+  )
+}
+
+/* ── IA Feature Icons (32px, gold #C9A84C) ── */
+function ChatIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  )
+}
+
+function HangerIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+    </svg>
+  )
+}
+
+function BagIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+  )
+}
+
+function ShieldIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <line x1="9" y1="9" x2="15" y2="15"/>
+      <line x1="15" y1="9" x2="9" y2="15"/>
+    </svg>
+  )
+}
+
+function CameraIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  )
+}
+
+function SparklesIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/>
+    </svg>
   )
 }

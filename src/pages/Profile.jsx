@@ -7,11 +7,15 @@ const CITIES = ['Casablanca', 'Rabat', 'Marrakech', 'Fès', 'Tanger', 'Agadir', 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 
 export default function Profile() {
-  const { getStats, items, signOut } = useWardrobeStore()
+  const { getStats, items, signOut, user, userProfile } = useWardrobeStore()
   const navigate = useNavigate()
   const stats = getStats()
+
+  const displayName = userProfile?.full_name || user?.user_metadata?.full_name || ''
+  const displayEmail = user?.email || ''
+  const avatarLetter = displayName ? displayName.charAt(0).toUpperCase() : (displayEmail ? displayEmail.charAt(0).toUpperCase() : '?')
+
   const [profile, setProfile] = useState({
-    name: 'Youssef El Amrani',
     city: 'Casablanca',
     size: 'M',
     favOccasions: ['Casual', 'Travail'],
@@ -45,22 +49,16 @@ export default function Profile() {
             fontSize: 28, fontWeight: 700, color: 'white',
             boxShadow: '0 4px 16px rgba(201,168,76,0.3)',
           }}>
-            {profile.name.charAt(0)}
+            {avatarLetter}
           </div>
           <div style={{ flex: 1 }}>
-            {editing ? (
-              <input
-                className="input"
-                value={profile.name}
-                onChange={e => setProfile(p => ({ ...p, name: e.target.value }))}
-                style={{ marginBottom: 0, fontSize: 18, fontWeight: 700 }}
-              />
-            ) : (
-              <>
-                <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)' }}>{profile.name}</div>
-                <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>📍 {profile.city}</div>
-              </>
-            )}
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)' }}>
+              {displayName || displayEmail || 'Mon Profil'}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+              {displayEmail && <span style={{ display: 'block' }}>{displayEmail}</span>}
+              📍 {profile.city}
+            </div>
           </div>
           <button
             onClick={() => setEditing(!editing)}
@@ -90,6 +88,7 @@ export default function Profile() {
             { label: 'Total portés', value: stats.totalWears, icon: '📅' },
             { label: 'Catégorie favorite', value: topCategory ? topCategory[0] : '—', icon: '🏆' },
           ].map(s => (
+
             <div key={s.label} style={{
               background: 'var(--surface)', border: '1px solid var(--border)',
               borderRadius: 'var(--radius-card)', padding: '14px 16px',
@@ -164,7 +163,11 @@ export default function Profile() {
 
         {/* Wardrobe breakdown */}
         <Section title="Ma Garde-robe">
-          {Object.entries(categoryBreakdown).map(([cat, count]) => (
+          {Object.entries(categoryBreakdown).length === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>
+              Votre garde-robe est vide
+            </div>
+          ) : Object.entries(categoryBreakdown).map(([cat, count]) => (
             <div key={cat} style={{ marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
                 <span style={{ fontWeight: 500 }}>{cat}</span>

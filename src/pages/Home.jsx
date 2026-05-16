@@ -14,7 +14,9 @@ const QUICK_ACTIONS = [
 
 export default function Home() {
   const navigate  = useNavigate()
-  const { items, outfits, getStats } = useWardrobeStore()
+  const { items, outfits, getStats, user, userProfile } = useWardrobeStore()
+  const fullName = userProfile?.full_name || user?.user_metadata?.full_name || ''
+  const firstName = fullName.split(' ')[0]
   const stats     = getStats()
   const favs      = items.filter(i => i.favorite).slice(0, 4)
   const recent    = outfits.slice(0, 2)
@@ -54,11 +56,10 @@ export default function Home() {
                 fontSize: 11, fontWeight: 700, color: '#C9A84C',
                 letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8,
               }}>
-                BONJOUR ✦
+                CLOZY ✦
               </div>
               <div style={{ fontSize: 26, fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
-                Votre style,<br />
-                <span style={{ color: '#C9A84C' }}>votre identité</span>
+                {firstName ? `Bonjour, ${firstName} 👋` : 'Bonjour 👋'}
               </div>
             </div>
             <button

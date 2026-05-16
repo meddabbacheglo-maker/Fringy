@@ -16,19 +16,21 @@ import ItemDetail from './pages/ItemDetail'
 const PUBLIC_PATHS = ['/', '/auth']
 
 function AuthGuard({ children }) {
-  const { user, authLoading, setUser } = useWardrobeStore()
+  const { user, authLoading, setUser, fetchItems, fetchProfile } = useWardrobeStore()
   const navigate  = useNavigate()
   const location  = useLocation()
 
   useEffect(() => {
-    // Resolve current session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      const u = session?.user ?? null
+      setUser(u)
+      if (u) { fetchItems(); fetchProfile() }
     })
 
-    // Keep store in sync with Supabase auth events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const u = session?.user ?? null
+      setUser(u)
+      if (event === 'SIGNED_IN') { fetchItems(); fetchProfile() }
     })
 
     return () => subscription.unsubscribe()

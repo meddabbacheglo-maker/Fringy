@@ -31,14 +31,15 @@ export const COLORS     = [
 
 const useWardrobeStore = create((set, get) => ({
   // ── State ────────────────────────────────────────────────
-  items:            sampleItems,
-  outfits:          sampleOutfits,
+  items:            [],
+  outfits:          [],
   selectedCategory: 'Tous',
   searchQuery:      '',
   activeOccasion:   null,
 
   // auth
   user:        null,
+  userProfile: null,
   authLoading: true,
 
   // ── Auth ─────────────────────────────────────────────────
@@ -51,6 +52,15 @@ const useWardrobeStore = create((set, get) => ({
       options: { data: { full_name: fullName } },
     })
     if (error) throw error
+    if (data.user) {
+      try {
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          full_name: fullName,
+          email,
+        })
+      } catch (_) {}
+    }
     return data
   },
 
@@ -63,7 +73,7 @@ const useWardrobeStore = create((set, get) => ({
 
   signOut: async () => {
     await supabase.auth.signOut()
-    set({ user: null })
+    set({ user: null, userProfile: null, items: [], outfits: [] })
   },
 
   getCurrentUser: async () => {
@@ -71,6 +81,24 @@ const useWardrobeStore = create((set, get) => ({
     const user = session?.user ?? null
     set({ user, authLoading: false })
     return user
+  },
+
+  fetchProfile: async () => {
+    const { user } = get()
+    if (!user) return
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', user.id)
+        .single()
+      if (data) {
+        set({ userProfile: data })
+        return
+      }
+    } catch (_) {}
+    // Fall back to user_metadata if profiles table is unavailable
+    set({ userProfile: { full_name: user.user_metadata?.full_name || null } })
   },
 
   // ── Supabase data ─────────────────────────────────────────
@@ -82,8 +110,8 @@ const useWardrobeStore = create((set, get) => ({
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-    if (!error && data.length > 0) {
-      const mapped = data.map(r => ({
+    if (!error) {
+      const mapped = (data || []).map(r => ({
         id:        r.id,
         name:      r.name,
         category:  r.category,

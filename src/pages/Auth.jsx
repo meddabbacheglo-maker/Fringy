@@ -17,7 +17,7 @@ export default function Auth() {
   const handleSubmit = async () => {
     setError('')
     if (!form.email || !form.password) { setError('Veuillez remplir tous les champs.'); return }
-    if (mode === 'signup' && !form.fullName) { setError('Veuillez entrer votre prénom.'); return }
+    if (mode === 'signup' && !form.fullName) { setError('Veuillez entrer votre nom complet.'); return }
     setLoading(true)
     try {
       if (mode === 'login') {
@@ -103,9 +103,9 @@ export default function Auth() {
           {/* Full name (signup only) */}
           {mode === 'signup' && (
             <Field
-              label="Prénom"
+              label="Nom complet"
               type="text"
-              placeholder="Votre prénom"
+              placeholder="Votre nom complet"
               value={form.fullName}
               onChange={v => set('fullName', v)}
               autoFocus
