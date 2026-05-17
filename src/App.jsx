@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import useWardrobeStore from './store/useWardrobeStore'
@@ -19,6 +19,13 @@ function AuthGuard({ children }) {
   const { user, authLoading, setUser, fetchItems, fetchProfile } = useWardrobeStore()
   const navigate  = useNavigate()
   const location  = useLocation()
+  const [splashDone, setSplashDone] = useState(false)
+
+  /* Ensure splash shows for at least 1.5 s */
+  useEffect(() => {
+    const t = setTimeout(() => setSplashDone(true), 1500)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -39,32 +46,30 @@ function AuthGuard({ children }) {
   useEffect(() => {
     if (authLoading) return
     const isPublic = PUBLIC_PATHS.includes(location.pathname)
-    if (!user && !isPublic) navigate('/auth', { replace: true })
-    if (user && isPublic) navigate('/home', { replace: true })
+    /* Redirect unauthenticated users away from protected routes */
+    if (!user && !isPublic) navigate('/', { replace: true })
+    /* Redirect authenticated users away from /auth only */
+    if (user && location.pathname === '/auth') navigate('/home', { replace: true })
   }, [user, authLoading, location.pathname])
 
-  if (authLoading) return <Splash />
+  /* Show white splash until both auth resolved and min 1.5 s elapsed */
+  if (authLoading || !splashDone) return <Splash />
   return children
 }
 
 function Splash() {
   return (
     <div style={{
-      height: '100dvh', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      background: '#0D0D0A',
+      height: '100dvh',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#FFFFFF',
     }}>
-      <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', color: '#FFFFFF' }}>
-        Clo<span style={{ color: '#C9A84C' }}>zy</span>
-      </div>
-      <div style={{ marginTop: 24, width: 32, height: 32 }}>
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="13" stroke="rgba(201,168,76,0.2)" strokeWidth="3"/>
-          <path d="M16 3 A13 13 0 0 1 29 16" stroke="#C9A84C" strokeWidth="3" strokeLinecap="round">
-            <animateTransform attributeName="transform" type="rotate" from="0 16 16" to="360 16 16" dur="0.9s" repeatCount="indefinite"/>
-          </path>
-        </svg>
-      </div>
+      <span style={{
+        fontSize: 48, fontWeight: 900, letterSpacing: '-0.04em',
+        color: '#000000', fontFamily: 'Inter, sans-serif',
+      }}>
+        Clozy
+      </span>
     </div>
   )
 }
@@ -74,16 +79,16 @@ export default function App() {
     <BrowserRouter>
       <AuthGuard>
         <Routes>
-          <Route path="/"               element={<Landing />} />
-          <Route path="/auth"           element={<Auth />} />
-          <Route path="/home"           element={<Home />} />
-          <Route path="/wardrobe"       element={<Wardrobe />} />
-          <Route path="/wardrobe/add"   element={<AddItem />} />
-          <Route path="/wardrobe/:id"   element={<ItemDetail />} />
-          <Route path="/outfits"        element={<Outfits />} />
-          <Route path="/stylist"        element={<Stylist />} />
-          <Route path="/profile"        element={<Profile />} />
-          <Route path="*"              element={<Navigate to="/" replace />} />
+          <Route path="/"             element={<Landing />} />
+          <Route path="/auth"         element={<Auth />} />
+          <Route path="/home"         element={<Home />} />
+          <Route path="/wardrobe"     element={<Wardrobe />} />
+          <Route path="/wardrobe/add" element={<AddItem />} />
+          <Route path="/wardrobe/:id" element={<ItemDetail />} />
+          <Route path="/outfits"      element={<Outfits />} />
+          <Route path="/stylist"      element={<Stylist />} />
+          <Route path="/profile"      element={<Profile />} />
+          <Route path="*"             element={<Navigate to="/" replace />} />
         </Routes>
         <BottomNav />
       </AuthGuard>

@@ -1,228 +1,241 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useWardrobeStore from '../store/useWardrobeStore'
 
-/* ── Clothing items for wardrobe grid ── */
-const CLOTHES_GRID = [
-  { emoji: '👕', bg: '#F0F0F0' },
-  { emoji: '👔', bg: '#E8F0FE' },
-  { emoji: '👡', bg: '#FEE8E8' },
-  { emoji: '👖', bg: '#E3F0FF' },
-  { emoji: '👟', bg: '#F0F8E8' },
-  { emoji: '👜', bg: '#FFF3E0' },
-  { emoji: '🩷', bg: '#FFE8F5' },
-  { emoji: '🧥', bg: '#F5F0FF' },
+const CLOTHES = [
+  { emoji: '👕', bg: '#F5F5F5' },
+  { emoji: '👔', bg: '#EBF0FE' },
+  { emoji: '👡', bg: '#FEE9E9' },
+  { emoji: '👖', bg: '#E3EEFF' },
+  { emoji: '👟', bg: '#EDFAEB' },
+  { emoji: '👜', bg: '#FFF5E0' },
+  { emoji: '🩷', bg: '#FDE8F5' },
+  { emoji: '🧥', bg: '#F3EFFF' },
   { emoji: '🧣', bg: '#E8FFF0' },
 ]
 
-const SLIDE_DESCRIPTIONS = [
-  'Gérez vos vêtements',
-  "Planifiez vos tenues à l'avance",
-  'Connectez avec vos amis',
-  'Obtenez des suggestions IA',
+const SLIDES = [
+  {
+    description: 'Gérez vos vêtements',
+    subtitle: 'Digitalisez votre garde-robe en quelques secondes',
+  },
+  {
+    description: 'Planifiez vos tenues',
+    subtitle: 'Organisez votre semaine et suivez vos looks',
+  },
+  {
+    description: 'Connectez avec vos amis',
+    subtitle: 'Voyez ce que portent vos proches',
+  },
 ]
 
 export default function Landing() {
   const navigate = useNavigate()
+  const { user } = useWardrobeStore()
   const [active, setActive] = useState(0)
   const touchStartX = useRef(null)
   const touchEndX   = useRef(null)
 
-  /* Auto-advance */
   useEffect(() => {
-    const id = setInterval(() => setActive(i => (i + 1) % 4), 3500)
+    const id = setInterval(() => setActive(i => (i + 1) % 3), 3500)
     return () => clearInterval(id)
   }, [])
 
-  /* Swipe handlers */
   const onTouchStart = e => { touchStartX.current = e.targetTouches[0].clientX }
   const onTouchMove  = e => { touchEndX.current   = e.targetTouches[0].clientX }
   const onTouchEnd   = () => {
     if (!touchStartX.current || !touchEndX.current) return
     const diff = touchStartX.current - touchEndX.current
-    if (Math.abs(diff) > 40) setActive(i => diff > 0 ? (i + 1) % 4 : (i + 3) % 4)
+    if (Math.abs(diff) > 40) setActive(i => diff > 0 ? (i + 1) % 3 : (i + 2) % 3)
     touchStartX.current = null
     touchEndX.current   = null
   }
 
   return (
     <div style={{
-      minHeight: '100dvh', background: '#FFFFFF',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      padding: '0 24px',
-      userSelect: 'none',
+      height: '100dvh', background: '#FFFFFF',
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden', userSelect: 'none',
     }}>
 
-      {/* ── Logo ── */}
-      <div style={{ paddingTop: 52, marginBottom: 20, textAlign: 'center' }}>
+      {/* Logo */}
+      <div style={{ flexShrink: 0, paddingTop: 48, paddingBottom: 12, textAlign: 'center' }}>
         <span style={{
-          fontSize: 42, fontWeight: 900, letterSpacing: '-0.04em',
+          fontSize: 32, fontWeight: 900, letterSpacing: '-0.04em',
           color: '#000000', fontFamily: 'Inter, sans-serif',
         }}>
           Clozy
         </span>
       </div>
 
-      {/* ── Phone mockup ── */}
+      {/* Mockup — flex:1 */}
       <div
+        style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        style={{ position: 'relative', marginBottom: 20 }}
       >
         <MockupFrame>
           {active === 0 && <SlideWardrobe />}
           {active === 1 && <SlidePlanner />}
           {active === 2 && <SlideSocial />}
-          {active === 3 && <SlideAI />}
         </MockupFrame>
       </div>
 
-      {/* ── Description ── */}
-      <div style={{
-        fontSize: 22, fontWeight: 800, color: '#000000',
-        textAlign: 'center', letterSpacing: '-0.02em', lineHeight: 1.25,
-        marginBottom: 14, minHeight: 56,
-        transition: 'opacity 0.25s',
-      }}>
-        {SLIDE_DESCRIPTIONS[active]}
+      {/* Description */}
+      <div style={{ flexShrink: 0, textAlign: 'center', padding: '14px 28px 10px' }}>
+        <div style={{ fontSize: 22, fontWeight: 800, color: '#000', letterSpacing: '-0.02em', lineHeight: 1.25, marginBottom: 8 }}>
+          {SLIDES[active].description}
+        </div>
+        <div style={{ fontSize: 15, color: '#666666', lineHeight: 1.55 }}>
+          {SLIDES[active].subtitle}
+        </div>
       </div>
 
-      {/* ── Dots ── */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {[0,1,2,3].map(i => (
+      {/* Dots */}
+      <div style={{ flexShrink: 0, display: 'flex', gap: 7, justifyContent: 'center', padding: '10px 0 0' }}>
+        {[0, 1, 2].map(i => (
           <button
             key={i}
             onClick={() => setActive(i)}
             style={{
-              width: 8, height: 8, borderRadius: '50%', padding: 0, border: 'none',
+              width: i === active ? 22 : 8, height: 8, borderRadius: 4,
+              padding: 0, border: 'none', cursor: 'pointer',
               background: i === active ? '#000000' : '#D1D1D1',
-              cursor: 'pointer', transition: 'background 0.25s',
+              transition: 'all 0.25s',
             }}
           />
         ))}
       </div>
 
-      {/* ── Fixed bottom ── */}
+      {/* Bottom bar */}
       <div style={{
-        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 430,
-        background: 'rgba(255,255,255,0.97)',
-        backdropFilter: 'blur(12px)',
-        padding: '16px 24px 44px',
+        flexShrink: 0,
+        padding: '18px 24px 44px',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
       }}>
         <button
-          onClick={() => navigate('/auth')}
+          onClick={() => navigate(user ? '/home' : '/auth')}
           style={{
             width: '100%', height: 56, borderRadius: 999,
             background: '#000000', border: 'none',
-            color: '#FFFFFF', fontSize: 17, fontWeight: 700,
+            color: '#FFFFFF', fontSize: 16, fontWeight: 700,
             cursor: 'pointer', letterSpacing: '-0.01em',
-            transition: 'transform 0.1s, opacity 0.15s',
+            transition: 'opacity 0.15s',
           }}
-          onTouchStart={e => e.currentTarget.style.opacity = '0.85'}
-          onTouchEnd={e => e.currentTarget.style.opacity = '1'}
+          onTouchStart={e => { e.currentTarget.style.opacity = '0.82' }}
+          onTouchEnd={e => { e.currentTarget.style.opacity = '1' }}
         >
-          Rejoindre gratuitement
+          {user ? 'Continuer' : 'Rejoindre gratuitement'}
         </button>
-        <button
-          onClick={() => navigate('/auth?mode=login')}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: 15, fontWeight: 500, color: '#888888',
-          }}
-        >
-          Se connecter
-        </button>
+        {!user && (
+          <button
+            onClick={() => navigate('/auth?mode=login')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 500, color: '#888888' }}
+          >
+            Se connecter
+          </button>
+        )}
       </div>
 
     </div>
   )
 }
 
-/* ── Mockup frame ── */
+/* ── Phone mockup shell ── */
 function MockupFrame({ children }) {
   return (
     <div style={{
-      width: 210, height: 420,
-      borderRadius: 32,
-      border: '1.5px solid #E5E5E5',
-      boxShadow: '0 12px 48px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
-      overflow: 'hidden', background: '#FFFFFF',
+      /* responsive: fills vertical space up to 460px */
+      height: '100%', maxHeight: 460,
+      aspectRatio: '9/19',
+      minWidth: 0, maxWidth: 220,
+      borderRadius: 34,
+      border: '1.5px solid #E0E0E0',
+      boxShadow: '0 16px 56px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+      background: '#FFFFFF',
       display: 'flex', flexDirection: 'column',
-      position: 'relative',
+      overflow: 'hidden', position: 'relative',
+      flexShrink: 0,
     }}>
       {/* Status bar */}
       <div style={{
-        height: 20, flexShrink: 0, background: '#FFFFFF',
+        height: 20, flexShrink: 0, background: '#FFF',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 14px', fontSize: 9, fontWeight: 700, color: '#000',
       }}>
         <span>9:41</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          <div style={{ display: 'flex', gap: 1.5 }}>
-            {[1,2,3].map(b => <div key={b} style={{ width: 3, height: 3+b, background: '#000', borderRadius: 1 }}/>)}
+          <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
+            {[4, 6, 8, 10].map((h, i) => (
+              <div key={i} style={{ width: 3, height: h, background: i < 3 ? '#000' : '#D0D0D0', borderRadius: 1 }} />
+            ))}
           </div>
-          <div style={{ width: 14, height: 6, border: '1px solid #000', borderRadius: 1.5, padding: '1px', display: 'flex', alignItems: 'center' }}>
-            <div style={{ width: '70%', height: '100%', background: '#000', borderRadius: 0.5 }}/>
+          <div style={{ width: 14, height: 7, border: '1.5px solid #000', borderRadius: 2, padding: '1px 1px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ width: '65%', height: '100%', background: '#000', borderRadius: 1 }} />
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* Slide content */}
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative' }}>
         {children}
       </div>
 
-      {/* Mini nav bar */}
+      {/* App nav inside mockup */}
       <div style={{
-        height: 38, flexShrink: 0, background: '#FFFFFF',
+        height: 36, flexShrink: 0, background: '#FFF',
         borderTop: '0.5px solid #F0F0F0',
         display: 'flex', alignItems: 'center', justifyContent: 'space-around',
-        padding: '0 20px',
+        padding: '0 24px',
       }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" stroke="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000" stroke="none">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        </svg>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5"  y1="12" x2="19" y2="12"/>
           </svg>
         </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#AAAAAA" strokeWidth="2" strokeLinecap="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
       </div>
     </div>
   )
 }
 
-/* ── Slide 1: Wardrobe Grid ── */
+/* ── Slide 1: Wardrobe ── */
 function SlideWardrobe() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FFF' }}>
-      {/* App header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px 4px' }}>
-        <div style={{ width: 16 }} />
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#000' }}>Vous</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      {/* App top bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px 4px' }}>
+        <div style={{ fontSize: 10, fontWeight: 800, color: '#000' }}>Clozy</div>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
         </svg>
       </div>
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '0.5px solid #F0F0F0', padding: '0 8px' }}>
+      <div style={{ display: 'flex', borderBottom: '0.5px solid #F0F0F0', padding: '0 6px' }}>
         {['Vêtements', 'Tenues', 'Collections'].map((t, i) => (
           <div key={t} style={{
-            flex: 1, textAlign: 'center', fontSize: 8, fontWeight: i === 0 ? 700 : 500,
-            color: i === 0 ? '#000' : '#AAA', paddingBottom: 5,
+            flex: 1, textAlign: 'center', fontSize: 7.5, fontWeight: i === 0 ? 700 : 400,
+            color: i === 0 ? '#000' : '#AAAAAA',
+            paddingBottom: 4,
             borderBottom: i === 0 ? '1.5px solid #000' : '1.5px solid transparent',
-            cursor: 'default',
           }}>{t}</div>
         ))}
       </div>
       {/* Grid */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, padding: 4 }}>
-        {CLOTHES_GRID.map((item, i) => (
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, padding: 5 }}>
+        {CLOTHES.map((item, i) => (
           <div key={i} style={{
-            background: item.bg, borderRadius: 6,
+            background: item.bg, borderRadius: 7,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, aspectRatio: '1',
+            fontSize: 17, aspectRatio: '1',
           }}>
             {item.emoji}
           </div>
@@ -234,73 +247,55 @@ function SlideWardrobe() {
 
 /* ── Slide 2: Planner ── */
 function SlidePlanner() {
-  const days = ['L','M','M','J','V','S','D']
-  const nums = [3,4,5,6,7,8,9]
-  const today = 2 // index of "today" (Wednesday = index 2)
+  const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
+  const nums = [3, 4, 5, 6, 7, 8, 9]
+  const today = 2
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FFF', padding: '6px 10px 0' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FFF', padding: '6px 8px 0' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontSize: 11, fontWeight: 800, color: '#000' }}>Planner</span>
-        <div style={{ background: '#000', borderRadius: 99, padding: '2px 8px' }}>
-          <span style={{ fontSize: 7, fontWeight: 700, color: '#FFF' }}>Aujourd'hui</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+        <span style={{ fontSize: 10, fontWeight: 800, color: '#000' }}>Planner</span>
+        <div style={{ background: '#000', borderRadius: 99, padding: '2px 7px' }}>
+          <span style={{ fontSize: 6.5, fontWeight: 700, color: '#FFF' }}>Aujourd'hui</span>
         </div>
       </div>
-      {/* Day/Month tabs */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 6 }}>
-        {['Jour', 'Mois'].map((t, i) => (
-          <span key={t} style={{
-            fontSize: 8, fontWeight: 700, color: i === 0 ? '#000' : '#AAA',
-            borderBottom: i === 0 ? '1.5px solid #000' : 'none',
-            paddingBottom: 2,
-          }}>{t}</span>
-        ))}
-      </div>
       {/* Week strip */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
         {days.map((d, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <span style={{ fontSize: 7, color: '#AAA', fontWeight: 500 }}>{d}</span>
+            <span style={{ fontSize: 6, color: '#AAAAAA', fontWeight: 500 }}>{d}</span>
             <div style={{
-              width: 16, height: 16, borderRadius: '50%',
+              width: 15, height: 15, borderRadius: '50%',
               background: i === today ? '#000' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontSize: 7, fontWeight: 700, color: i === today ? '#FFF' : '#000' }}>{nums[i]}</span>
+              <span style={{ fontSize: 6.5, fontWeight: 700, color: i === today ? '#FFF' : '#000' }}>{nums[i]}</span>
             </div>
           </div>
         ))}
       </div>
       {/* Date label */}
-      <div style={{ fontSize: 8, fontWeight: 700, color: '#000', marginBottom: 6 }}>Mercredi, 6 Août</div>
-      {/* Outfit photo */}
+      <div style={{ fontSize: 8, fontWeight: 700, color: '#000', marginBottom: 5 }}>Mercredi, 5 Mars</div>
+      {/* Outfit photo card */}
       <div style={{
-        flex: 1, borderRadius: 8, overflow: 'hidden', position: 'relative', marginBottom: 6,
-        background: 'linear-gradient(135deg, #1A1A2E, #16213E, #0F3460)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flex: 1, borderRadius: 9, overflow: 'hidden', position: 'relative',
+        background: 'linear-gradient(160deg, #0F172A 0%, #1E3A5F 50%, #0F3460 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 5,
       }}>
-        <span style={{ fontSize: 28 }}>👗</span>
+        <span style={{ fontSize: 30 }}>👗</span>
         {/* Stats float card */}
         <div style={{
-          position: 'absolute', bottom: 6, left: 6, right: 6,
-          background: 'rgba(255,255,255,0.92)', borderRadius: 6, padding: '5px 8px',
-          display: 'flex', gap: 8, alignItems: 'center',
+          position: 'absolute', bottom: 5, left: 5, right: 5,
+          background: 'rgba(255,255,255,0.94)', borderRadius: 7, padding: '5px 7px',
+          display: 'flex', gap: 0, alignItems: 'center',
         }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: '#4CAF50' }}>3</div>
-            <div style={{ fontSize: 6, color: '#888' }}>Tenues</div>
-          </div>
-          <div style={{ width: 0.5, height: 20, background: '#EEE' }}/>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: '#C9A84C' }}>12</div>
-            <div style={{ fontSize: 6, color: '#888' }}>Articles</div>
-          </div>
-          <div style={{ width: 0.5, height: 20, background: '#EEE' }}/>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: '#3B82F6' }}>785€</div>
-            <div style={{ fontSize: 6, color: '#888' }}>Valeur</div>
-          </div>
+          {[['3', 'Tenues', '#4CAF50'], ['12', 'Articles', '#C9A84C'], ['785€', 'Valeur', '#3B82F6']].map(([val, label, color], i, arr) => (
+            <div key={label} style={{ flex: 1, textAlign: 'center', borderRight: i < arr.length - 1 ? '0.5px solid #EEE' : 'none' }}>
+              <div style={{ fontSize: 8, fontWeight: 800, color }}>{val}</div>
+              <div style={{ fontSize: 5.5, color: '#888', marginTop: 1 }}>{label}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -309,29 +304,29 @@ function SlidePlanner() {
 
 /* ── Slide 3: Social ── */
 function SlideSocial() {
-  const items = ['👚','🎀','📷','👖','👖','👟','👟','❤️','👗']
+  const grid = ['👚', '🎀', '📷', '👖', '👟', '👜', '❤️', '👗', '🧣']
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FFF', padding: '6px 10px 0' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#FFF', padding: '6px 8px 0', position: 'relative' }}>
       {/* Profile */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B, #EF4444)', flexShrink: 0 }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
+        <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B, #EF4444)', flexShrink: 0 }} />
         <div>
-          <div style={{ fontSize: 9, fontWeight: 800, color: '#000' }}>Melissa 🌸</div>
-          <div style={{ fontSize: 7, color: '#888' }}>113 Abonnés · 76 Abonnements</div>
+          <div style={{ fontSize: 8.5, fontWeight: 800, color: '#000' }}>Melissa 🌸</div>
+          <div style={{ fontSize: 6.5, color: '#888', marginTop: 1 }}>113 Abonnés · 76 Abonnements</div>
         </div>
       </div>
       {/* Handle + follow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontSize: 7.5, color: '#888' }}>@melissa_e</span>
-        <div style={{ background: '#000', borderRadius: 99, padding: '3px 10px' }}>
-          <span style={{ fontSize: 7, fontWeight: 700, color: '#FFF' }}>Suivre</span>
+        <span style={{ fontSize: 7, color: '#888' }}>@melissa_e</span>
+        <div style={{ background: '#000', borderRadius: 99, padding: '3px 9px' }}>
+          <span style={{ fontSize: 6.5, fontWeight: 700, color: '#FFF' }}>Suivre</span>
         </div>
       </div>
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 10, borderBottom: '0.5px solid #F0F0F0', marginBottom: 4 }}>
         {['Vêtements', 'Tenues'].map((t, i) => (
           <span key={t} style={{
-            fontSize: 7.5, fontWeight: 700, color: i === 0 ? '#000' : '#AAA',
+            fontSize: 7, fontWeight: 700, color: i === 0 ? '#000' : '#AAAAAA',
             borderBottom: i === 0 ? '1.5px solid #000' : 'none',
             paddingBottom: 3,
           }}>{t}</span>
@@ -339,56 +334,25 @@ function SlideSocial() {
       </div>
       {/* Grid */}
       <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
-        {items.map((emoji, i) => (
+        {grid.map((emoji, i) => (
           <div key={i} style={{
-            background: '#F8F8F8', borderRadius: 4,
+            background: '#F8F8F8', borderRadius: 5,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 16, aspectRatio: '1',
+            fontSize: 15, aspectRatio: '1',
           }}>
             {emoji}
           </div>
         ))}
       </div>
-      {/* Toast notification */}
+      {/* Toast */}
       <div style={{
-        position: 'absolute', bottom: 42, left: 8, right: 8,
-        background: 'rgba(255,255,255,0.95)', borderRadius: 8, padding: '5px 8px',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+        position: 'absolute', bottom: 40, left: 6, right: 6,
+        background: 'rgba(255,255,255,0.96)', borderRadius: 8, padding: '5px 8px',
+        boxShadow: '0 2px 14px rgba(0,0,0,0.14)',
         display: 'flex', alignItems: 'center', gap: 6,
       }}>
-        <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'linear-gradient(135deg, #A78BFA, #7C3AED)', flexShrink: 0 }} />
-        <span style={{ fontSize: 6.5, color: '#333', lineHeight: 1.3 }}>Alice a commencé à vous suivre</span>
-      </div>
-    </div>
-  )
-}
-
-/* ── Slide 4: AI Stylist ── */
-function SlideAI() {
-  return (
-    <div style={{ height: '100%', padding: '8px 8px 0', display: 'flex', flexDirection: 'column', gap: 6, background: '#FFF' }}>
-      <div style={{ fontSize: 9, fontWeight: 800, color: '#000', marginBottom: 2, textAlign: 'center' }}>Styliste IA</div>
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-        {[
-          { bg: 'linear-gradient(160deg,#0F172A,#1E293B)', label: 'Créer un outfit', emoji: '✨' },
-          { bg: 'linear-gradient(160deg,#3B0764,#7C3AED)', label: 'Évaluer mon outfit', emoji: '⭐' },
-        ].map((card, i) => (
-          <div key={i} style={{
-            background: card.bg,
-            borderRadius: 12, overflow: 'hidden',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            position: 'relative', padding: 8,
-          }}>
-            <div style={{ fontSize: 24, marginBottom: 6 }}>{card.emoji}</div>
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'rgba(0,0,0,0.55)', padding: '6px 6px',
-            }}>
-              <div style={{ fontSize: 7, fontWeight: 700, color: '#FFF', lineHeight: 1.3 }}>{card.label}</div>
-            </div>
-          </div>
-        ))}
+        <div style={{ width: 15, height: 15, borderRadius: '50%', background: 'linear-gradient(135deg, #A78BFA, #7C3AED)', flexShrink: 0 }} />
+        <span style={{ fontSize: 6.5, color: '#333', lineHeight: 1.4 }}>Alice a commencé à vous suivre</span>
       </div>
     </div>
   )

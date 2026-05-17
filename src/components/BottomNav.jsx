@@ -17,6 +17,9 @@ export default function BottomNav() {
       ? location.pathname === path
       : location.pathname === path || location.pathname.startsWith(path + '/')
 
+  const homeActive    = at('/home')
+  const profileActive = at('/profile')
+
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
@@ -26,27 +29,42 @@ export default function BottomNav() {
       borderTop: '1px solid var(--border)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-around',
       height: 'var(--nav-height)',
-      padding: '0 32px 8px',
+      padding: '0 40px 8px',
       zIndex: 100,
     }}>
 
-      <TabBtn label="Accueil" active={at('/home')} onClick={() => navigate('/home')}>
-        <HomeIcon active={at('/home')} />
-      </TabBtn>
+      {/* Home */}
+      <button
+        onClick={() => navigate('/home')}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 44, height: 44, background: 'none', border: 'none', cursor: 'pointer',
+          color: homeActive ? '#000' : '#BBBBBB',
+        }}
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24"
+          fill={homeActive ? '#000' : 'none'}
+          stroke="currentColor" strokeWidth="1.8"
+          strokeLinecap="round" strokeLinejoin="round"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </button>
 
       {/* Center FAB — black */}
       <button
         onClick={() => navigate('/wardrobe/add')}
         style={{
-          width: 54, height: 54, borderRadius: '50%', flexShrink: 0,
-          background: '#000000',
+          width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
+          background: '#000',
           border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.30)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.28)',
           transform: 'translateY(-8px)',
           transition: 'transform 0.15s, box-shadow 0.15s',
         }}
-        onTouchStart={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(0.93)' }}
+        onTouchStart={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(0.92)' }}
         onTouchEnd={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1)' }}
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
@@ -55,55 +73,21 @@ export default function BottomNav() {
         </svg>
       </button>
 
-      <TabBtn label="Profil" active={at('/profile')} onClick={() => navigate('/profile')}>
-        <ProfileIcon active={at('/profile')} />
-      </TabBtn>
+      {/* Profile */}
+      <button
+        onClick={() => navigate('/profile')}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 44, height: 44, background: 'none', border: 'none', cursor: 'pointer',
+          color: profileActive ? '#000' : '#BBBBBB',
+        }}
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4" fill={profileActive ? 'rgba(0,0,0,0.12)' : 'none'}/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
 
     </nav>
-  )
-}
-
-function TabBtn({ label, active, onClick, children }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-        padding: '6px 10px 2px', minWidth: 64,
-        background: 'none', border: 'none', cursor: 'pointer',
-        color: active ? 'var(--gold)' : 'var(--text-light)',
-        transition: 'color 0.15s',
-        position: 'relative',
-      }}
-    >
-      {children}
-      <span style={{ fontSize: 10, fontWeight: active ? 600 : 400, letterSpacing: '0.01em' }}>
-        {label}
-      </span>
-      {active && (
-        <span style={{
-          position: 'absolute', bottom: -2, left: '50%', transform: 'translateX(-50%)',
-          width: 4, height: 4, borderRadius: '50%', background: 'var(--gold)',
-        }} />
-      )}
-    </button>
-  )
-}
-
-function HomeIcon({ active }) {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? 'var(--gold)' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-  )
-}
-
-function ProfileIcon({ active }) {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8" r="4" fill={active ? 'rgba(201,168,76,0.15)' : 'none'}/>
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-    </svg>
   )
 }

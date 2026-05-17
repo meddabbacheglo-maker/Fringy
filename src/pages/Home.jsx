@@ -2,28 +2,24 @@ import { useNavigate } from 'react-router-dom'
 import useWardrobeStore from '../store/useWardrobeStore'
 import ClothingCard from '../components/ClothingCard'
 
-const STORIES = [
-  { name: 'Vous',    color1: '#C9A84C', color2: '#A8843A', isUser: true },
-  { name: 'Leila',   color1: '#F59E0B', color2: '#EF4444', emoji: '🌸' },
-  { name: 'Yasmine', color1: '#8B5CF6', color2: '#EC4899', emoji: '✨' },
-  { name: 'Sofia',   color1: '#06B6D4', color2: '#3B82F6', emoji: '💎' },
-  { name: 'Nadia',   color1: '#10B981', color2: '#059669', emoji: '🌿' },
-]
+const IA_PHOTO_1 = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80'
+const IA_PHOTO_2 = 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80'
 
-const SHORTCUTS = [
-  { label: 'Ajouter',     emoji: '➕', path: '/wardrobe/add', bg: '#F0F0F0' },
-  { label: 'Garde-robe',  emoji: '👗', path: '/wardrobe',     bg: '#E8F0FE' },
-  { label: 'Tenues',      emoji: '✨', path: '/outfits',      bg: '#FFF3E0' },
-  { label: 'Styliste',    emoji: '🤖', path: '/stylist',      bg: '#F3E8FF' },
+const STORIES = [
+  { name: 'Communauté', type: 'community' },
+  { name: 'Votre OOTD', type: 'ootd' },
+  { name: 'Leila',      type: 'user', initials: 'L', ring: '#7C3AED' },
+  { name: 'Yasmine',    type: 'user', initials: 'Y', ring: '#EC4899' },
+  { name: 'Sofia',      type: 'user', initials: 'S', ring: '#3B82F6' },
 ]
 
 export default function Home() {
   const navigate = useNavigate()
   const { items, outfits, getStats, user, userProfile } = useWardrobeStore()
 
-  const fullName  = userProfile?.full_name || user?.user_metadata?.full_name || ''
-  const firstName = fullName.split(' ')[0]
-  const avatarLetter = (firstName || 'C')[0].toUpperCase()
+  const fullName     = userProfile?.full_name || user?.user_metadata?.full_name || ''
+  const firstName    = fullName.split(' ')[0]
+  const avatarLetter = (firstName || user?.email?.[0] || 'C')[0].toUpperCase()
 
   const stats  = getStats()
   const recent = [...items].slice(0, 6)
@@ -34,50 +30,40 @@ export default function Home() {
       {/* ── Top Bar ── */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '56px 20px 14px',
+        padding: '52px 20px 12px',
       }}>
+        {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 9,
-            background: 'linear-gradient(135deg, #C9A84C, #A8843A)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
-            </svg>
-          </div>
-          <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em' }}>Clozy</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+          </svg>
+          <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.03em' }}>Clozy</span>
         </div>
 
+        {/* Upgrade pill */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
-          background: 'var(--gold-bg)', border: '1px solid rgba(201,168,76,0.25)',
-          borderRadius: 99, padding: '5px 12px', cursor: 'pointer',
+          background: '#000', borderRadius: 99,
+          padding: '6px 14px', cursor: 'pointer',
         }}>
           <span style={{ fontSize: 12 }}>⭐</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gold)' }}>Upgrade</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#FFF' }}>Upgrade</span>
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'var(--surface)', border: '1px solid var(--border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        {/* Right icons */}
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
             </svg>
           </button>
           <button
             onClick={() => navigate('/wardrobe')}
-            style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
             </svg>
           </button>
         </div>
@@ -94,91 +80,107 @@ export default function Home() {
       </div>
 
       {/* ── Stories ── */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 22 }}>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', padding: '0 20px', scrollbarWidth: 'none' }}>
-          {STORIES.map((s, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flexShrink: 0, cursor: 'pointer' }}>
+
+          {/* Communauté */}
+          <StoryCircle
+            label="Communauté"
+            ring="#7C3AED"
+            bg="linear-gradient(135deg, #7C3AED, #A855F7)"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </StoryCircle>
+
+          {/* Votre OOTD */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flexShrink: 0, cursor: 'pointer' }}>
+            <div style={{ position: 'relative' }}>
               <div style={{
-                width: 58, height: 58, borderRadius: '50%', padding: 2.5,
-                background: `linear-gradient(135deg, ${s.color1}, ${s.color2})`,
+                width: 64, height: 64, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #16A34A, #22C55E)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <div style={{
-                  width: '100%', height: '100%', borderRadius: '50%',
-                  border: '2px solid white',
-                  background: s.isUser ? `linear-gradient(135deg, ${s.color1}, ${s.color2})` : 'var(--surface)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: s.isUser ? 17 : 20,
-                  fontWeight: 800, color: 'white',
-                }}>
-                  {s.isUser ? avatarLetter : s.emoji}
-                </div>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M3 9h18M9 21V9"/>
+                </svg>
               </div>
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-muted)' }}>
-                {s.name}
-              </span>
+              <div style={{
+                position: 'absolute', bottom: 0, right: 0,
+                width: 20, height: 20, borderRadius: '50%',
+                background: '#000', border: '2px solid #FFF',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5"  y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
             </div>
+            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)' }}>Votre OOTD</span>
+          </div>
+
+          {/* User placeholder circles */}
+          {[
+            { name: 'Leila',   bg: 'linear-gradient(135deg, #F59E0B, #EF4444)',  ring: '#F59E0B' },
+            { name: 'Yasmine', bg: 'linear-gradient(135deg, #EC4899, #8B5CF6)', ring: '#EC4899' },
+            { name: 'Sofia',   bg: 'linear-gradient(135deg, #3B82F6, #06B6D4)', ring: '#3B82F6' },
+          ].map(s => (
+            <StoryCircle key={s.name} label={s.name} ring={s.ring} bg={s.bg}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: 'white' }}>
+                {s.name[0]}
+              </span>
+            </StoryCircle>
           ))}
+
         </div>
       </div>
 
       {/* ── IA Stylist ── */}
-      <div style={{ padding: '0 20px', marginBottom: 20 }}>
+      <div style={{ padding: '0 20px', marginBottom: 22 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em' }}>Styliste IA</span>
-          <button onClick={() => navigate('/stylist')} style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-            Voir tout
-          </button>
+          <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>IA Stylist</span>
+          <span
+            onClick={() => navigate('/stylist')}
+            style={{ fontSize: 20, fontWeight: 800, color: '#000', cursor: 'pointer' }}
+          >›</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <AICard
-            bg="linear-gradient(160deg, #0F172A, #1E293B)"
+          <IACard
+            photo={IA_PHOTO_1}
             title="Créer un outfit"
             subtitle="Suggestions IA"
-            emoji="✨"
             onClick={() => navigate('/stylist')}
           />
-          <AICard
-            bg="linear-gradient(160deg, #3B0764, #7C3AED)"
-            title="Tenue du jour"
-            subtitle="Planifier"
-            emoji="👗"
-            onClick={() => navigate('/outfits')}
+          <IACard
+            photo={IA_PHOTO_2}
+            title="Évaluer mon outfit"
+            subtitle="Analyse de style"
+            thumbsDown
+            onClick={() => navigate('/stylist')}
           />
         </div>
       </div>
 
       {/* ── Shortcuts ── */}
-      <div style={{ padding: '0 20px', marginBottom: 20 }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em', display: 'block', marginBottom: 12 }}>
+      <div style={{ padding: '0 20px', marginBottom: 22 }}>
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em', display: 'block', marginBottom: 12 }}>
           Raccourcis
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-          {SHORTCUTS.map(s => (
-            <button
-              key={s.path}
-              onClick={() => navigate(s.path)}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                background: 'var(--surface)', border: '1px solid var(--border)',
-                borderRadius: 14, padding: '14px 8px', cursor: 'pointer',
-              }}
-            >
-              <div style={{
-                width: 40, height: 40, borderRadius: 10, background: s.bg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
-              }}>
-                {s.emoji}
-              </div>
-              <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text)', textAlign: 'center' }}>
-                {s.label}
-              </span>
-            </button>
-          ))}
+          <ShortcutCard label="Planner"       icon={<CalendarIcon />}  onClick={() => navigate('/outfits')} />
+          <ShortcutCard label="Dressing Room" icon={<HangerIcon />}    onClick={() => navigate('/wardrobe')} />
+          <ShortcutCard label="IA Try On"     icon={<SparklesIcon />}  onClick={() => navigate('/stylist')} />
+          <ShortcutCard label="Selfie"        icon={<CameraIcon />}    onClick={() => navigate('/profile')} />
         </div>
       </div>
 
       {/* ── Stats ── */}
-      <div style={{ padding: '0 20px', marginBottom: 20 }}>
+      <div style={{ padding: '0 20px', marginBottom: 22 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
           {[
             { label: 'Articles', value: stats.totalItems },
@@ -187,9 +189,9 @@ export default function Home() {
           ].map(s => (
             <div key={s.label} style={{
               background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: 12, padding: '14px 10px', textAlign: 'center',
+              borderRadius: 14, padding: '14px 10px', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--gold)', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>
                 {s.value}
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3, fontWeight: 500 }}>
@@ -200,14 +202,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Recent outfits ── */}
+      {/* ── Tenues récentes ── */}
       {outfits.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 22 }}>
           <div style={{ padding: '0 20px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em' }}>Mes tenues</span>
-            <button onClick={() => navigate('/outfits')} style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-              Tout voir
-            </button>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Tenues récentes</span>
+            <span onClick={() => navigate('/outfits')} style={{ fontSize: 20, fontWeight: 800, color: '#000', cursor: 'pointer' }}>›</span>
           </div>
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px', paddingBottom: 4, scrollbarWidth: 'none' }}>
             {outfits.slice(0, 5).map(outfit => (
@@ -217,12 +217,12 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Recent items ── */}
+      {/* ── Ajouts récents ── */}
       {recent.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 22 }}>
           <div style={{ padding: '0 20px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.02em' }}>Ajouts récents</span>
-            <button onClick={() => navigate('/wardrobe')} style={{ fontSize: 13, color: 'var(--gold)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Ajouts récents</span>
+            <button onClick={() => navigate('/wardrobe')} style={{ fontSize: 13, color: '#000', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
               Tout voir
             </button>
           </div>
@@ -239,7 +239,10 @@ export default function Home() {
       {/* ── Empty state ── */}
       {items.length === 0 && (
         <div style={{ padding: '0 20px 20px' }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '32px 20px', textAlign: 'center' }}>
+          <div style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 16, padding: '32px 20px', textAlign: 'center',
+          }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>👗</div>
             <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Garde-robe vide</div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
@@ -256,23 +259,81 @@ export default function Home() {
   )
 }
 
-function AICard({ bg, title, subtitle, emoji, onClick }) {
+/* ── Sub-components ── */
+
+function StoryCircle({ label, ring, bg, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flexShrink: 0, cursor: 'pointer' }}>
+      <div style={{
+        width: 64, height: 64, borderRadius: '50%',
+        background: bg,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: `0 0 0 2.5px #FFF, 0 0 0 4.5px ${ring}`,
+      }}>
+        {children}
+      </div>
+      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+function IACard({ photo, title, subtitle, thumbsDown, onClick }) {
   return (
     <div
       onClick={onClick}
       style={{
-        borderRadius: 16, overflow: 'hidden',
-        background: bg, padding: '16px 14px',
-        cursor: 'pointer', minHeight: 120,
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        height: 180, borderRadius: 16, overflow: 'hidden',
+        position: 'relative', cursor: 'pointer',
+        backgroundImage: `url(${photo})`,
+        backgroundSize: 'cover', backgroundPosition: 'center',
       }}
     >
-      <div style={{ fontSize: 28 }}>{emoji}</div>
-      <div>
+      {/* Gradient overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,0.78) 100%)',
+      }} />
+      {/* Top icon */}
+      {thumbsDown && (
+        <div style={{ position: 'absolute', top: 10, right: 10 }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/>
+            <path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/>
+          </svg>
+        </div>
+      )}
+      {/* Text */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 12px' }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#FFF', lineHeight: 1.3 }}>{title}</div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.60)', marginTop: 2 }}>{subtitle}</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>{subtitle}</div>
       </div>
     </div>
+  )
+}
+
+function ShortcutCard({ label, icon, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
+        background: '#FFF', border: '1px solid var(--border)',
+        borderRadius: 16, padding: '14px 6px', cursor: 'pointer',
+      }}
+    >
+      <div style={{
+        width: 44, height: 44, borderRadius: 12,
+        background: 'var(--surface)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {icon}
+      </div>
+      <span style={{ fontSize: 10, fontWeight: 600, color: '#333', textAlign: 'center', lineHeight: 1.3 }}>
+        {label}
+      </span>
+    </button>
   )
 }
 
@@ -294,5 +355,42 @@ function OutfitPill({ outfit, onClick }) {
         {outfit.occasion || 'Casual'}
       </div>
     </div>
+  )
+}
+
+/* ── Shortcut icons (28px, black) ── */
+function CalendarIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8"  y1="2" x2="8"  y2="6"/>
+      <line x1="3"  y1="10" x2="21" y2="10"/>
+    </svg>
+  )
+}
+
+function HangerIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+    </svg>
+  )
+}
+
+function SparklesIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/>
+    </svg>
+  )
+}
+
+function CameraIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
   )
 }
