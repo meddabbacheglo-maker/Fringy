@@ -1,15 +1,17 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import useWardrobeStore from '../store/useWardrobeStore'
 
-const BG = 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80'
+const BG = 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&q=80'
 
 export default function Auth() {
-  const navigate      = useNavigate()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { signIn, signUp } = useWardrobeStore()
-  const [mode, setMode]    = useState('login')   // 'login' | 'signup'
-  const [form, setForm]    = useState({ email: '', password: '', fullName: '' })
-  const [error, setError]  = useState('')
+  const [showEmailForm, setShowEmailForm] = useState(searchParams.get('mode') === 'login')
+  const [mode, setMode] = useState(searchParams.get('mode') === 'login' ? 'login' : 'signup')
+  const [form, setForm] = useState({ email: '', password: '', fullName: '' })
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -39,164 +41,229 @@ export default function Auth() {
 
   return (
     <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
-      {/* Background image */}
+      {/* Background */}
       <img
         src={BG}
         alt=""
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
       />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,8,5,0.55) 0%, rgba(10,8,5,0.35) 35%, rgba(10,8,5,0.90) 100%)' }} />
-
-      {/* Back button */}
-      <button
-        onClick={() => navigate('/')}
-        style={{
-          position: 'absolute', top: 52, left: 20, zIndex: 10,
-          width: 38, height: 38, borderRadius: 10,
-          background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.20)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-        }}
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-          <path d="M19 12H5M12 5l-7 7 7 7"/>
-        </svg>
-      </button>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)' }} />
 
       {/* Logo */}
-      <div style={{ position: 'absolute', top: 50, left: '50%', transform: 'translateX(-50%)', zIndex: 10, textAlign: 'center' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.04em', color: '#FFFFFF' }}>
-          Clo<span style={{ color: '#C9A84C' }}>zy</span>
+      <div style={{ position: 'absolute', top: 64, left: 0, right: 0, zIndex: 10, textAlign: 'center' }}>
+        <div style={{
+          fontSize: 48, fontWeight: 900, letterSpacing: '-0.04em',
+          color: '#FFFFFF', lineHeight: 1,
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          Clozy
+        </div>
+        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.70)', marginTop: 10, fontWeight: 400 }}>
+          Votre garde-robe intelligente
         </div>
       </div>
 
-      {/* Card */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
-        background: 'rgba(15,12,8,0.92)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
-        borderRadius: '24px 24px 0 0',
-        border: '1px solid rgba(255,255,255,0.08)',
-        padding: '28px 24px 44px',
-      }}>
-        {/* Tab toggle */}
+      {/* OAuth buttons */}
+      {!showEmailForm && (
         <div style={{
-          display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12,
-          padding: 4, marginBottom: 24, border: '1px solid rgba(255,255,255,0.08)',
+          position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+          width: '100%', maxWidth: 430, zIndex: 20,
+          padding: '24px 24px 48px',
+          display: 'flex', flexDirection: 'column', gap: 12,
         }}>
-          {[['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([key, label]) => (
+          <OAuthBtn icon={<AppleIcon />} label="Continuer avec Apple" />
+          <OAuthBtn icon={<GoogleIcon />} label="Continuer avec Google" />
+          <OAuthBtn
+            icon={<EmailIcon />}
+            label="Continuer avec Email"
+            onClick={() => setShowEmailForm(true)}
+          />
+        </div>
+      )}
+
+      {/* Email bottom sheet */}
+      {showEmailForm && (
+        <>
+          <div
+            onClick={() => setShowEmailForm(false)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 25,
+              background: 'rgba(0,0,0,0.40)',
+              animation: 'overlayIn 0.25s ease',
+            }}
+          />
+          <div style={{
+            position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+            width: '100%', maxWidth: 430, zIndex: 30,
+            background: '#FFFFFF',
+            borderRadius: '24px 24px 0 0',
+            padding: '20px 24px 48px',
+            animation: 'slideUp 0.30s ease',
+          }}>
+            {/* Handle */}
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0E0E0', margin: '0 auto 20px' }} />
+
+            {/* Tab toggle */}
+            <div style={{
+              display: 'flex', background: '#F5F5F5', borderRadius: 12,
+              padding: 4, marginBottom: 20,
+            }}>
+              {[['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => { setMode(key); setError('') }}
+                  style={{
+                    flex: 1, padding: '10px', borderRadius: 9, border: 'none', cursor: 'pointer',
+                    fontSize: 14, fontWeight: 600, transition: 'all 0.2s',
+                    background: mode === key ? '#000000' : 'transparent',
+                    color: mode === key ? '#FFFFFF' : '#888888',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {mode === 'signup' && (
+                <LightField
+                  label="Nom complet"
+                  type="text"
+                  placeholder="Votre nom complet"
+                  value={form.fullName}
+                  onChange={v => set('fullName', v)}
+                />
+              )}
+              <LightField
+                label="Email"
+                type="email"
+                placeholder="vous@exemple.com"
+                value={form.email}
+                onChange={v => set('email', v)}
+              />
+              <LightField
+                label="Mot de passe"
+                type="password"
+                placeholder={mode === 'signup' ? 'Minimum 6 caractères' : '••••••••'}
+                value={form.password}
+                onChange={v => set('password', v)}
+                onEnter={handleSubmit}
+              />
+            </div>
+
+            {error && (
+              <div style={{
+                marginTop: 12, padding: '10px 14px', borderRadius: 10,
+                background: '#FEF2F2', border: '1px solid #FECACA',
+                fontSize: 13, color: '#EF4444', lineHeight: 1.5,
+              }}>
+                {error}
+              </div>
+            )}
+
             <button
-              key={key}
-              onClick={() => { setMode(key); setError('') }}
+              onClick={handleSubmit}
+              disabled={loading}
               style={{
-                flex: 1, padding: '10px', borderRadius: 9, border: 'none', cursor: 'pointer',
-                fontSize: 14, fontWeight: 600, transition: 'all 0.2s',
-                background: mode === key ? '#C9A84C' : 'transparent',
-                color:      mode === key ? '#FFFFFF' : 'rgba(255,255,255,0.45)',
+                width: '100%', marginTop: 16,
+                padding: '15px 24px', borderRadius: '999px',
+                border: 'none',
+                background: loading ? '#CCCCCC' : '#000000',
+                color: '#FFFFFF', fontSize: 16, fontWeight: 700,
+                cursor: loading ? 'default' : 'pointer',
+                transition: 'all 0.2s',
               }}
             >
-              {label}
+              {loading ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
             </button>
-          ))}
-        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {/* Full name (signup only) */}
-          {mode === 'signup' && (
-            <Field
-              label="Nom complet"
-              type="text"
-              placeholder="Votre nom complet"
-              value={form.fullName}
-              onChange={v => set('fullName', v)}
-              autoFocus
-            />
-          )}
-
-          <Field
-            label="Email"
-            type="email"
-            placeholder="vous@exemple.com"
-            value={form.email}
-            onChange={v => set('email', v)}
-            autoFocus={mode === 'login'}
-          />
-
-          <Field
-            label="Mot de passe"
-            type="password"
-            placeholder={mode === 'signup' ? 'Minimum 6 caractères' : '••••••••'}
-            value={form.password}
-            onChange={v => set('password', v)}
-            onEnter={handleSubmit}
-          />
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div style={{
-            marginTop: 14, padding: '10px 14px', borderRadius: 10,
-            background: 'rgba(201,40,62,0.15)', border: '1px solid rgba(201,40,62,0.30)',
-            fontSize: 13, color: '#FF6B7A', lineHeight: 1.5,
-          }}>
-            {error}
+            {mode === 'signup' && (
+              <div style={{ textAlign: 'center', marginTop: 12, fontSize: 11, color: '#BBBBBB', lineHeight: 1.6 }}>
+                En créant un compte, vous acceptez nos{' '}
+                <span style={{ color: '#888', textDecoration: 'underline', cursor: 'pointer' }}>CGU</span>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            width: '100%', marginTop: 20,
-            padding: '15px 24px', borderRadius: '999px',
-            border: 'none', background: loading ? 'rgba(201,168,76,0.5)' : '#C9A84C',
-            color: '#FFFFFF', fontSize: 16, fontWeight: 700, cursor: loading ? 'default' : 'pointer',
-            boxShadow: loading ? 'none' : '0 4px 20px rgba(201,168,76,0.40)',
-            transition: 'all 0.2s', letterSpacing: '0.01em',
-          }}
-        >
-          {loading
-            ? 'Chargement...'
-            : mode === 'login' ? 'Se connecter' : 'Créer mon compte'}
-        </button>
-
-        {/* Note for signup */}
-        {mode === 'signup' && (
-          <div style={{ textAlign: 'center', marginTop: 14, fontSize: 11, color: 'rgba(255,255,255,0.30)', lineHeight: 1.6 }}>
-            En créant un compte, vous acceptez nos{' '}
-            <span style={{ color: 'rgba(255,255,255,0.50)', textDecoration: 'underline', cursor: 'pointer' }}>CGU</span>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }
 
-function Field({ label, type, placeholder, value, onChange, onEnter, autoFocus }) {
+function OAuthBtn({ icon, label, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', height: 56, borderRadius: 999,
+        background: '#FFFFFF', border: 'none',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        fontSize: 16, fontWeight: 600, color: '#000000',
+        cursor: 'pointer',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+      }}
+    >
+      {icon}
+      {label}
+    </button>
+  )
+}
+
+function LightField({ label, type, placeholder, value, onChange, onEnter }) {
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.50)', marginBottom: 6, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+      <label style={{
+        display: 'block', fontSize: 12, fontWeight: 600, color: '#888888',
+        marginBottom: 6, letterSpacing: '0.04em', textTransform: 'uppercase',
+      }}>
         {label}
       </label>
       <input
         type={type}
         placeholder={placeholder}
         value={value}
-        autoFocus={autoFocus}
         autoComplete={type === 'password' ? 'current-password' : type === 'email' ? 'email' : 'name'}
         onChange={e => onChange(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && onEnter?.()}
         style={{
           width: '100%', padding: '13px 16px',
-          borderRadius: 12, border: '1.5px solid rgba(255,255,255,0.12)',
-          background: 'rgba(255,255,255,0.06)',
-          color: '#FFFFFF', fontSize: 15, outline: 'none',
+          borderRadius: 12, border: '1.5px solid #EEEEEE',
+          background: '#FFFFFF',
+          color: '#1A1A1A', fontSize: 15, outline: 'none',
           transition: 'border-color 0.2s',
           fontFamily: 'inherit',
         }}
         onFocus={e => e.target.style.borderColor = '#C9A84C'}
-        onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.12)'}
+        onBlur={e => e.target.style.borderColor = '#EEEEEE'}
       />
     </div>
+  )
+}
+
+function AppleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+    </svg>
+  )
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  )
+}
+
+function EmailIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
   )
 }
