@@ -187,7 +187,7 @@ export default function Profile() {
 
         {/* App info */}
         <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--gold)', letterSpacing: '-0.03em', marginBottom: 3 }}>Clozy</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#C9956C', letterSpacing: '0.2em', marginBottom: 3 }}>FRINGY</div>
           <div style={{ fontSize: 12, color: 'var(--text-light)' }}>Version 1.0 · Made in Morocco 🇲🇦</div>
         </div>
 

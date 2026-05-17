@@ -17,14 +17,15 @@ const PUBLIC_PATHS = ['/', '/auth']
 
 function AuthGuard({ children }) {
   const { user, authLoading, setUser, fetchItems, fetchProfile } = useWardrobeStore()
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [splashDone, setSplashDone] = useState(false)
+  const [splashFading, setSplashFading] = useState(false)
 
-  /* Ensure splash shows for at least 1.5 s */
   useEffect(() => {
-    const t = setTimeout(() => setSplashDone(true), 1500)
-    return () => clearTimeout(t)
+    const t1 = setTimeout(() => setSplashFading(true), 1700)
+    const t2 = setTimeout(() => setSplashDone(true), 2000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
   useEffect(() => {
@@ -44,32 +45,53 @@ function AuthGuard({ children }) {
   }, [])
 
   useEffect(() => {
-    if (authLoading) return
+    if (authLoading || !splashDone) return
     const isPublic = PUBLIC_PATHS.includes(location.pathname)
-    /* Redirect unauthenticated users away from protected routes */
     if (!user && !isPublic) navigate('/', { replace: true })
-    /* Redirect authenticated users away from /auth only */
     if (user && location.pathname === '/auth') navigate('/home', { replace: true })
-  }, [user, authLoading, location.pathname])
+  }, [user, authLoading, location.pathname, splashDone])
 
-  /* Show white splash until both auth resolved and min 1.5 s elapsed */
-  if (authLoading || !splashDone) return <Splash />
+  if (authLoading || !splashDone) return <Splash fading={splashFading} />
   return children
 }
 
-function Splash() {
+function Splash({ fading }) {
   return (
     <div style={{
-      height: '100dvh',
+      position: 'fixed',
+      inset: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#FFFFFF',
+      background: '#000000',
+      zIndex: 9999,
+      opacity: fading ? 0 : 1,
+      transition: fading ? 'opacity 0.3s ease' : 'none',
+      pointerEvents: fading ? 'none' : 'auto',
     }}>
-      <span style={{
-        fontSize: 48, fontWeight: 900, letterSpacing: '-0.04em',
-        color: '#000000', fontFamily: 'Inter, sans-serif',
-      }}>
-        Clozy
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <svg width="130" height="30" viewBox="0 0 130 30" fill="none">
+          <path
+            d="M8 22 C 22 4, 38 26, 65 14 C 92 2, 108 22, 122 10"
+            stroke="#C9956C"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
+        <div style={{
+          fontSize: 32, fontWeight: 300, color: '#FFFFFF',
+          letterSpacing: '0.3em', fontFamily: 'Inter, sans-serif',
+          marginTop: 8,
+        }}>
+          FRINGY
+        </div>
+        <div style={{ width: 30, height: 1, background: '#C9956C', margin: '10px 0' }} />
+        <div style={{
+          fontSize: 11, fontWeight: 300, color: 'rgba(255,255,255,0.7)',
+          letterSpacing: '0.4em', fontFamily: 'Inter, sans-serif',
+        }}>
+          DRESS IT EASY
+        </div>
+      </div>
     </div>
   )
 }

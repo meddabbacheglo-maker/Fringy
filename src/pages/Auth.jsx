@@ -47,19 +47,30 @@ export default function Auth() {
         alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
       />
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
 
       {/* Logo */}
-      <div style={{ position: 'absolute', top: 64, left: 0, right: 0, zIndex: 10, textAlign: 'center' }}>
+      <div style={{ position: 'absolute', top: 72, left: 0, right: 0, zIndex: 10, textAlign: 'center', padding: '0 24px' }}>
         <div style={{
-          fontSize: 48, fontWeight: 900, letterSpacing: '-0.04em',
+          fontSize: 48, fontWeight: 700, letterSpacing: '0.2em',
           color: '#FFFFFF', lineHeight: 1,
           fontFamily: 'Inter, sans-serif',
         }}>
-          Clozy
+          FRINGY
         </div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.70)', marginTop: 10, fontWeight: 400 }}>
-          Votre garde-robe intelligente
+        <div style={{
+          fontSize: 12, color: 'rgba(255,255,255,0.70)',
+          marginTop: 8, fontWeight: 300,
+          letterSpacing: '0.3em', fontFamily: 'Inter, sans-serif',
+        }}>
+          DRESS IT EASY
+        </div>
+        <div style={{
+          marginTop: 24, fontSize: 15,
+          color: 'rgba(255,255,255,0.70)',
+          fontWeight: 400, lineHeight: 1.5,
+        }}>
+          Connectez-vous ou créez un compte gratuitement.
         </div>
       </div>
 
@@ -100,10 +111,8 @@ export default function Auth() {
             padding: '20px 24px 48px',
             animation: 'slideUp 0.30s ease',
           }}>
-            {/* Handle */}
             <div style={{ width: 36, height: 4, borderRadius: 2, background: '#E0E0E0', margin: '0 auto 20px' }} />
 
-            {/* Tab toggle */}
             <div style={{
               display: 'flex', background: '#F5F5F5', borderRadius: 12,
               padding: 4, marginBottom: 20,
@@ -200,7 +209,8 @@ function OAuthBtn({ icon, label, onClick }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         fontSize: 16, fontWeight: 600, color: '#000000',
         cursor: 'pointer',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+        marginBottom: 0,
       }}
     >
       {icon}
@@ -233,7 +243,7 @@ function LightField({ label, type, placeholder, value, onChange, onEnter }) {
           transition: 'border-color 0.2s',
           fontFamily: 'inherit',
         }}
-        onFocus={e => e.target.style.borderColor = '#C9A84C'}
+        onFocus={e => e.target.style.borderColor = '#C9956C'}
         onBlur={e => e.target.style.borderColor = '#EEEEEE'}
       />
     </div>

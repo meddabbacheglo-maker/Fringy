@@ -32,12 +32,20 @@ export default function Home() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '52px 20px 12px',
       }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+        {/* Fringy logo: copper wave + FRINGY text */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
+          <svg width="48" height="11" viewBox="0 0 48 11" fill="none">
+            <path
+              d="M2 8 C 8 2, 15 10, 24 6 C 33 2, 40 9, 46 5"
+              stroke="#C9956C"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              fill="none"
+            />
           </svg>
-          <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.03em' }}>Clozy</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: '#000', letterSpacing: '0.18em', fontFamily: 'Inter, sans-serif' }}>
+            FRINGY
+          </span>
         </div>
 
         {/* Upgrade pill */}
