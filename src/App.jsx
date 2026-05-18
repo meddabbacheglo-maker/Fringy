@@ -67,10 +67,10 @@ function Splash({ fading }) {
       transition: fading ? 'opacity 0.3s ease' : 'none',
       pointerEvents: fading ? 'none' : 'auto',
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <svg width="130" height="30" viewBox="0 0 130 30" fill="none">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <svg width="120" height="22" viewBox="0 0 72 14" fill="none">
           <path
-            d="M8 22 C 22 4, 38 26, 65 14 C 92 2, 108 22, 122 10"
+            d="M 0,12 C 15,12 20,2 35,6 C 50,10 55,2 70,6"
             stroke="#C9956C"
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -78,16 +78,15 @@ function Splash({ fading }) {
           />
         </svg>
         <div style={{
-          fontSize: 32, fontWeight: 300, color: '#FFFFFF',
-          letterSpacing: '0.3em', fontFamily: 'Inter, sans-serif',
-          marginTop: 8,
+          fontSize: 32, fontWeight: 900, color: '#FFFFFF',
+          letterSpacing: '0.2em', fontFamily: 'Inter, sans-serif',
         }}>
           FRINGY
         </div>
-        <div style={{ width: 30, height: 1, background: '#C9956C', margin: '10px 0' }} />
+        <div style={{ width: 24, height: 1, background: '#C9956C' }} />
         <div style={{
-          fontSize: 11, fontWeight: 300, color: 'rgba(255,255,255,0.7)',
-          letterSpacing: '0.4em', fontFamily: 'Inter, sans-serif',
+          fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.60)',
+          letterSpacing: '0.3em', fontFamily: 'Inter, sans-serif',
         }}>
           DRESS IT EASY
         </div>

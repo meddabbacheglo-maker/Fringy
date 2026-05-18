@@ -48,14 +48,33 @@ export default function Landing() {
       overflow: 'hidden', userSelect: 'none',
     }}>
 
-      {/* Logo */}
-      <div style={{ flexShrink: 0, paddingTop: 44, paddingBottom: 10, textAlign: 'center' }}>
-        <span style={{
-          fontSize: 36, fontWeight: 900, letterSpacing: '-0.02em',
-          color: '#000000', fontFamily: 'Inter, sans-serif',
+      {/* Fringy brand logo */}
+      <div style={{
+        flexShrink: 0, paddingTop: 44, paddingBottom: 10,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+      }}>
+        <svg width="80" height="16" viewBox="0 0 72 14" fill="none">
+          <path
+            d="M 0,12 C 15,12 20,2 35,6 C 50,10 55,2 70,6"
+            stroke="#C9956C"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
+        <div style={{
+          fontSize: 22, fontWeight: 900, color: '#000000',
+          letterSpacing: '0.2em', fontFamily: 'Inter, sans-serif',
         }}>
-          Fringy
-        </span>
+          FRINGY
+        </div>
+        <div style={{ width: 24, height: 1, background: '#C9956C' }} />
+        <div style={{
+          fontSize: 9, fontWeight: 400, color: '#888888',
+          letterSpacing: '0.3em', fontFamily: 'Inter, sans-serif',
+        }}>
+          DRESS IT EASY
+        </div>
       </div>
 
       {/* Mockup */}
