@@ -5,12 +5,11 @@ import ClothingCard from '../components/ClothingCard'
 const IA_PHOTO_1 = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80'
 const IA_PHOTO_2 = 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=80'
 
-const STORIES = [
-  { name: 'Communauté', type: 'community' },
-  { name: 'Votre OOTD', type: 'ootd' },
-  { name: 'Leila',      type: 'user', initials: 'L', ring: '#7C3AED' },
-  { name: 'Yasmine',    type: 'user', initials: 'Y', ring: '#EC4899' },
-  { name: 'Sofia',      type: 'user', initials: 'S', ring: '#3B82F6' },
+const DEMO_OUTFITS = [
+  { photo: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=80', name: 'Look du jour' },
+  { photo: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=400&q=80', name: 'Casual chic' },
+  { photo: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&q=80', name: 'Street style' },
+  { photo: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80', name: 'Mode urbaine' },
 ]
 
 export default function Home() {
@@ -19,49 +18,53 @@ export default function Home() {
 
   const fullName     = userProfile?.full_name || user?.user_metadata?.full_name || ''
   const firstName    = fullName.split(' ')[0]
-  const avatarLetter = (firstName || user?.email?.[0] || 'C')[0].toUpperCase()
 
   const stats  = getStats()
   const recent = [...items].slice(0, 6)
 
   return (
-    <div className="page-no-header" style={{ background: 'var(--bg)' }}>
+    <div className="page-no-header" style={{ background: '#FFFFFF' }}>
 
-      {/* ── Top Bar ── */}
+      {/* ── Top Bar — black background ── */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '52px 20px 12px',
+        padding: '52px 20px 14px',
+        background: '#000000',
       }}>
-        {/* Fringy logo: copper wave + FRINGY text */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1 }}>
-          <svg width="48" height="11" viewBox="0 0 48 11" fill="none">
+        {/* Fringy logo: S-wave curve + FRINGY white text */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+          <svg width="52" height="16" viewBox="0 0 52 16" fill="none">
             <path
-              d="M2 8 C 8 2, 15 10, 24 6 C 33 2, 40 9, 46 5"
+              d="M 2 8 C 8 1, 18 1, 26 8 C 34 15, 44 15, 50 8"
               stroke="#C9956C"
-              strokeWidth="1.4"
+              strokeWidth="1.5"
               strokeLinecap="round"
               fill="none"
             />
           </svg>
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#000', letterSpacing: '0.18em', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{
+            fontSize: 14, fontWeight: 800, color: '#FFFFFF',
+            letterSpacing: '0.15em', fontFamily: 'Inter, sans-serif',
+          }}>
             FRINGY
           </span>
         </div>
 
-        {/* Upgrade pill */}
+        {/* Upgrade pill — gold border */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
           background: '#000', borderRadius: 99,
           padding: '6px 14px', cursor: 'pointer',
+          border: '1px solid #C9956C',
         }}>
           <span style={{ fontSize: 12 }}>⭐</span>
           <span style={{ fontSize: 12, fontWeight: 700, color: '#FFF' }}>Upgrade</span>
         </div>
 
-        {/* Right icons */}
+        {/* Right icons — white */}
         <div style={{ display: 'flex', gap: 10 }}>
           <button style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
             </svg>
           </button>
@@ -69,7 +72,7 @@ export default function Home() {
             onClick={() => navigate('/wardrobe')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"/>
               <path d="M21 21l-4.35-4.35"/>
             </svg>
@@ -78,11 +81,11 @@ export default function Home() {
       </div>
 
       {/* ── Greeting ── */}
-      <div style={{ padding: '0 20px 16px' }}>
-        <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+      <div style={{ padding: '16px 20px 16px' }}>
+        <div style={{ fontSize: 24, fontWeight: 800, color: '#000000', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
           {firstName ? `Bonjour, ${firstName} 👋` : 'Bonjour 👋'}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 3 }}>
+        <div style={{ fontSize: 13, color: '#888888', marginTop: 3 }}>
           Que portez-vous aujourd'hui ?
         </div>
       </div>
@@ -91,12 +94,7 @@ export default function Home() {
       <div style={{ marginBottom: 22 }}>
         <div style={{ display: 'flex', gap: 14, overflowX: 'auto', padding: '0 20px', scrollbarWidth: 'none' }}>
 
-          {/* Communauté */}
-          <StoryCircle
-            label="Communauté"
-            ring="#7C3AED"
-            bg="linear-gradient(135deg, #7C3AED, #A855F7)"
-          >
+          <StoryCircle label="Communauté" ring="#7C3AED" bg="linear-gradient(135deg, #7C3AED, #A855F7)">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
@@ -104,7 +102,6 @@ export default function Home() {
             </svg>
           </StoryCircle>
 
-          {/* Votre OOTD */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, flexShrink: 0, cursor: 'pointer' }}>
             <div style={{ position: 'relative' }}>
               <div style={{
@@ -129,19 +126,16 @@ export default function Home() {
                 </svg>
               </div>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)' }}>Votre OOTD</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#888888' }}>Votre OOTD</span>
           </div>
 
-          {/* User placeholder circles */}
           {[
             { name: 'Leila',   bg: 'linear-gradient(135deg, #F59E0B, #EF4444)',  ring: '#F59E0B' },
             { name: 'Yasmine', bg: 'linear-gradient(135deg, #EC4899, #8B5CF6)', ring: '#EC4899' },
             { name: 'Sofia',   bg: 'linear-gradient(135deg, #3B82F6, #06B6D4)', ring: '#3B82F6' },
           ].map(s => (
             <StoryCircle key={s.name} label={s.name} ring={s.ring} bg={s.bg}>
-              <span style={{ fontSize: 20, fontWeight: 800, color: 'white' }}>
-                {s.name[0]}
-              </span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: 'white' }}>{s.name[0]}</span>
             </StoryCircle>
           ))}
 
@@ -151,32 +145,18 @@ export default function Home() {
       {/* ── IA Stylist ── */}
       <div style={{ padding: '0 20px', marginBottom: 22 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>IA Stylist</span>
-          <span
-            onClick={() => navigate('/stylist')}
-            style={{ fontSize: 20, fontWeight: 800, color: '#000', cursor: 'pointer' }}
-          >›</span>
+          <span style={{ fontSize: 20, fontWeight: 800, color: '#000000', letterSpacing: '-0.02em' }}>IA Stylist</span>
+          <span onClick={() => navigate('/stylist')} style={{ fontSize: 20, fontWeight: 800, color: '#000', cursor: 'pointer' }}>›</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <IACard
-            photo={IA_PHOTO_1}
-            title="Créer un outfit"
-            subtitle="Suggestions IA"
-            onClick={() => navigate('/stylist')}
-          />
-          <IACard
-            photo={IA_PHOTO_2}
-            title="Évaluer mon outfit"
-            subtitle="Analyse de style"
-            thumbsDown
-            onClick={() => navigate('/stylist')}
-          />
+          <IACard photo={IA_PHOTO_1} title="Créer un outfit" subtitle="Suggestions IA" onClick={() => navigate('/stylist')} />
+          <IACard photo={IA_PHOTO_2} title="Évaluer mon outfit" subtitle="Analyse de style" thumbsDown onClick={() => navigate('/stylist')} />
         </div>
       </div>
 
       {/* ── Shortcuts ── */}
       <div style={{ padding: '0 20px', marginBottom: 22 }}>
-        <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em', display: 'block', marginBottom: 12 }}>
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#000000', letterSpacing: '-0.02em', display: 'block', marginBottom: 12 }}>
           Raccourcis
         </span>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -196,13 +176,13 @@ export default function Home() {
             { label: 'Portés',   value: stats.totalWears },
           ].map(s => (
             <div key={s.label} style={{
-              background: 'var(--surface)', border: '1px solid var(--border)',
+              background: '#F8F8F8', border: '1px solid #EEEEEE',
               borderRadius: 14, padding: '14px 10px', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: '#000000', letterSpacing: '-0.02em' }}>
                 {s.value}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3, fontWeight: 500 }}>
+              <div style={{ fontSize: 11, color: '#888888', marginTop: 3, fontWeight: 500 }}>
                 {s.label}
               </div>
             </div>
@@ -214,7 +194,7 @@ export default function Home() {
       {outfits.length > 0 && (
         <div style={{ marginBottom: 22 }}>
           <div style={{ padding: '0 20px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Tenues récentes</span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: '#000000', letterSpacing: '-0.02em' }}>Tenues récentes</span>
             <span onClick={() => navigate('/outfits')} style={{ fontSize: 20, fontWeight: 800, color: '#000', cursor: 'pointer' }}>›</span>
           </div>
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px', paddingBottom: 4, scrollbarWidth: 'none' }}>
@@ -225,43 +205,34 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Ajouts récents ── */}
-      {recent.length > 0 && (
-        <div style={{ marginBottom: 22 }}>
-          <div style={{ padding: '0 20px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 20, fontWeight: 800, color: '#000', letterSpacing: '-0.02em' }}>Ajouts récents</span>
-            <button onClick={() => navigate('/wardrobe')} style={{ fontSize: 13, color: '#000', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
+      {/* ── Articles récemment ajoutés (always visible) ── */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ padding: '0 20px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 18, fontWeight: 700, color: '#000000' }}>
+            Articles récemment ajoutés
+          </span>
+          {recent.length > 0 && (
+            <button
+              onClick={() => navigate('/wardrobe')}
+              style={{ fontSize: 13, color: '#000', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}
+            >
               Tout voir
             </button>
-          </div>
-          <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px', paddingBottom: 4, scrollbarWidth: 'none' }}>
-            {recent.map(item => (
-              <div key={item.id} style={{ width: 130, flexShrink: 0 }}>
-                <ClothingCard item={item} />
-              </div>
-            ))}
-          </div>
+          )}
         </div>
-      )}
-
-      {/* ── Empty state ── */}
-      {items.length === 0 && (
-        <div style={{ padding: '0 20px 20px' }}>
-          <div style={{
-            background: 'var(--surface)', border: '1px solid var(--border)',
-            borderRadius: 16, padding: '32px 20px', textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>👗</div>
-            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Garde-robe vide</div>
-            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 20 }}>
-              Commencez par ajouter vos premiers articles
-            </div>
-            <button className="btn-gold" style={{ width: '100%' }} onClick={() => navigate('/wardrobe/add')}>
-              Ajouter un article
-            </button>
-          </div>
+        <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '0 20px', paddingBottom: 6, scrollbarWidth: 'none' }}>
+          {recent.length > 0
+            ? recent.map(item => (
+                <div key={item.id} style={{ width: 130, flexShrink: 0 }}>
+                  <ClothingCard item={item} />
+                </div>
+              ))
+            : DEMO_OUTFITS.map((outfit, i) => (
+                <DemoOutfitCard key={i} photo={outfit.photo} name={outfit.name} />
+              ))
+          }
         </div>
-      )}
+      </div>
 
     </div>
   )
@@ -280,7 +251,7 @@ function StoryCircle({ label, ring, bg, children }) {
       }}>
         {children}
       </div>
-      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 11, fontWeight: 500, color: '#888888', whiteSpace: 'nowrap' }}>
         {label}
       </span>
     </div>
@@ -298,12 +269,10 @@ function IACard({ photo, title, subtitle, thumbsDown, onClick }) {
         backgroundSize: 'cover', backgroundPosition: 'center',
       }}
     >
-      {/* Gradient overlay */}
       <div style={{
         position: 'absolute', inset: 0,
         background: 'linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,0.78) 100%)',
       }} />
-      {/* Top icon */}
       {thumbsDown && (
         <div style={{ position: 'absolute', top: 10, right: 10 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -312,7 +281,6 @@ function IACard({ photo, title, subtitle, thumbsDown, onClick }) {
           </svg>
         </div>
       )}
-      {/* Text */}
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 12px' }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#FFF', lineHeight: 1.3 }}>{title}</div>
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>{subtitle}</div>
@@ -327,18 +295,18 @@ function ShortcutCard({ label, icon, onClick }) {
       onClick={onClick}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
-        background: '#FFF', border: '1px solid var(--border)',
+        background: '#FFFFFF', border: '1px solid #EEEEEE',
         borderRadius: 16, padding: '14px 6px', cursor: 'pointer',
       }}
     >
       <div style={{
         width: 44, height: 44, borderRadius: 12,
-        background: 'var(--surface)',
+        background: '#F8F8F8',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         {icon}
       </div>
-      <span style={{ fontSize: 10, fontWeight: 600, color: '#333', textAlign: 'center', lineHeight: 1.3 }}>
+      <span style={{ fontSize: 10, fontWeight: 600, color: '#333333', textAlign: 'center', lineHeight: 1.3 }}>
         {label}
       </span>
     </button>
@@ -351,22 +319,47 @@ function OutfitPill({ outfit, onClick }) {
       onClick={onClick}
       style={{
         flexShrink: 0, width: 140,
-        background: 'var(--surface)', border: '1px solid var(--border)',
+        background: '#F8F8F8', border: '1px solid #EEEEEE',
         borderRadius: 14, padding: '12px', cursor: 'pointer',
       }}
     >
       <div style={{ fontSize: 24, marginBottom: 6 }}>✨</div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#1A1A1A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {outfit.name}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+      <div style={{ fontSize: 11, color: '#888888', marginTop: 2 }}>
         {outfit.occasion || 'Casual'}
       </div>
     </div>
   )
 }
 
-/* ── Shortcut icons (28px, black) ── */
+function DemoOutfitCard({ photo, name }) {
+  return (
+    <div style={{ flexShrink: 0, width: 220 }}>
+      <div style={{
+        width: 220, height: 320,
+        borderRadius: 8, overflow: 'hidden',
+        position: 'relative', background: '#FFFFFF',
+      }}>
+        <img
+          src={photo}
+          alt={name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 64,
+          background: 'linear-gradient(to top, rgba(255,255,255,0.92), transparent)',
+        }} />
+      </div>
+      <div style={{ marginTop: 6, fontSize: 12, color: '#888888', fontWeight: 400 }}>
+        {name}
+      </div>
+    </div>
+  )
+}
+
+/* ── Shortcut icons ── */
 function CalendarIcon() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
